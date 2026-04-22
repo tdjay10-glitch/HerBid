@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "name": "herbid",
+  "public": true,
+  "routes": [
+    { "src": "/", "dest": "/public/index.html" },
+    { "src": "/pricing", "dest": "/public/pricing.html" },
+    { "src": "/onboarding", "dest": "/public/onboarding.html" },
+    { "src": "/dashboard", "dest": "/public/dashboard.html" },
+    { "src": "/contract", "dest": "/public/contract.html" },
+    { "src": "/proposal", "dest": "/public/proposal.html" },
+    { "src": "/notifications", "dest": "/public/notifications.html" },
+    { "src": "/won", "dest": "/public/won.html" },
+    { "src": "/mentors", "dest": "/public/mentors.html" },
+    { "src": "/settings", "dest": "/public/settings.html" },
+    { "src": "/(.*)", "dest": "/public/$1" }
+  ]
+}
