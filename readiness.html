@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contract Readiness Score | HerBid</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: "#171421",
+            plum: { 50: "#f7f1ff", 100: "#eadcff", 200: "#d4b7ff", 600: "#7c3aed", 700: "#6d28d9", 900: "#17183f" },
+            harvest: { 50: "#fff9eb", 100: "#fff1c7", 300: "#f4bd50", 500: "#f59e0b" }
+          },
+          boxShadow: {
+            soft: "0 18px 45px rgba(23, 20, 33, 0.08)",
+            glow: "0 24px 70px rgba(124, 58, 237, 0.18)"
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-white text-ink antialiased">
+  <header class="sticky top-0 z-30 border-b border-slate-200 bg-white/90 backdrop-blur">
+    <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+      <a href="index.html" class="flex items-center gap-3">
+        <img src="assets/herbid-logo.png" alt="HerBid" class="h-12 w-12 rounded-full object-cover ring-2 ring-harvest-300" />
+        <div>
+          <p class="text-lg font-extrabold">HerBid</p>
+          <p class="hidden text-xs font-bold uppercase tracking-wide text-slate-500 sm:block">Contract Readiness Score</p>
+        </div>
+      </a>
+      <nav class="flex items-center gap-4 text-sm font-bold text-slate-600">
+        <a href="dashboard.html" class="hidden transition hover:text-plum-700 sm:inline">Dashboard</a>
+        <a href="index.html#signup" class="rounded-xl bg-plum-700 px-4 py-2.5 text-white shadow-glow transition hover:bg-plum-600">Join waitlist</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="overflow-hidden bg-[linear-gradient(180deg,#ffffff_0%,#fbf7ff_62%,#ffffff_100%)] px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
+      <div class="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+        <div>
+          <div class="inline-flex items-center gap-2 rounded-full border border-plum-200 bg-white px-4 py-2 text-sm font-extrabold text-plum-700 shadow-sm">
+            Free 3-minute assessment
+          </div>
+          <h1 class="mt-6 max-w-3xl text-4xl font-extrabold tracking-tight text-ink sm:text-5xl lg:text-6xl">
+            Find out if your business is ready to pursue government contracts.
+          </h1>
+          <p class="mt-6 max-w-2xl text-lg leading-8 text-slate-600">
+            Answer a few practical questions about your business setup, certifications, NAICS codes, and bid workflow. HerBid will give you a readiness score and next steps.
+          </p>
+          <div class="mt-8 grid gap-3 sm:grid-cols-3">
+            <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              <p class="text-2xl font-extrabold text-plum-700">3 min</p>
+              <p class="mt-1 text-sm font-semibold text-slate-500">No prep needed</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              <p class="text-2xl font-extrabold text-amber-600">100</p>
+              <p class="mt-1 text-sm font-semibold text-slate-500">Point score</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              <p class="text-2xl font-extrabold text-emerald-600">4</p>
+              <p class="mt-1 text-sm font-semibold text-slate-500">Readiness levels</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-3xl border border-slate-200 bg-white p-4 shadow-glow sm:p-6">
+          <div class="rounded-2xl border border-plum-100 bg-slate-50 p-5">
+            <div class="flex items-center justify-between gap-4">
+              <div>
+                <p class="text-xs font-extrabold uppercase tracking-[0.2em] text-harvest-500">Preview result</p>
+                <h2 class="mt-2 text-2xl font-extrabold">Almost Bid-Ready</h2>
+              </div>
+              <div class="flex h-20 w-20 items-center justify-center rounded-full bg-plum-900 text-3xl font-extrabold text-white ring-8 ring-plum-100">68</div>
+            </div>
+            <p class="mt-5 text-sm leading-6 text-slate-600">
+              You have the foundation, but HerBid would recommend tightening your NAICS profile, capability statement, and deadline tracking before pursuing larger bids.
+            </p>
+            <div class="mt-5 grid gap-2">
+              <div class="rounded-xl bg-white p-3 text-sm font-bold text-slate-700">Set up saved opportunity tracking</div>
+              <div class="rounded-xl bg-white p-3 text-sm font-bold text-slate-700">Confirm certifications and target states</div>
+              <div class="rounded-xl bg-white p-3 text-sm font-bold text-slate-700">Build a repeatable bid review checklist</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="px-4 pb-16 sm:px-6 lg:px-8">
+      <div class="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[1fr_360px] lg:items-start">
+        <form id="quizForm" class="rounded-3xl border border-slate-200 bg-white p-4 shadow-soft sm:p-6">
+          <div class="flex flex-col gap-3 border-b border-slate-200 pb-5 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p class="text-xs font-extrabold uppercase tracking-[0.2em] text-plum-700">Readiness quiz</p>
+              <h2 class="mt-2 text-2xl font-extrabold tracking-tight">Answer what you know today</h2>
+            </div>
+            <button type="submit" class="rounded-xl bg-plum-700 px-5 py-3 text-sm font-extrabold text-white shadow-glow transition hover:-translate-y-0.5 hover:bg-plum-600">
+              Get my score
+            </button>
+          </div>
+
+          <div id="questions" class="mt-6 grid gap-6"></div>
+        </form>
+
+        <aside class="sticky top-24 grid gap-4">
+          <div id="resultCard" class="rounded-3xl border border-plum-100 bg-plum-50 p-5 shadow-sm">
+            <p class="text-xs font-extrabold uppercase tracking-[0.2em] text-plum-700">Your score</p>
+            <div class="mt-4 flex items-end gap-3">
+              <p id="scoreValue" class="text-6xl font-extrabold text-plum-900">--</p>
+              <p class="pb-2 text-sm font-extrabold text-slate-500">/ 100</p>
+            </div>
+            <h3 id="scoreTitle" class="mt-4 text-2xl font-extrabold">Complete the quiz</h3>
+            <p id="scoreCopy" class="mt-3 text-sm leading-6 text-slate-600">Your personalized readiness level and next steps will appear here.</p>
+            <div id="recommendations" class="mt-5 grid gap-2"></div>
+          </div>
+
+          <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+            <p class="text-sm font-extrabold">What HerBid can help with</p>
+            <ul class="mt-3 space-y-2 text-sm font-semibold leading-6 text-slate-600">
+              <li>Finding matching procurement opportunities</li>
+              <li>Filtering by NAICS, state, and certification</li>
+              <li>Saving bids worth reviewing</li>
+              <li>Tracking deadlines before they sneak up</li>
+            </ul>
+            <div class="mt-5 grid gap-2">
+              <a href="dashboard.html" class="inline-flex justify-center rounded-xl bg-plum-700 px-4 py-3 text-sm font-extrabold text-white transition hover:bg-plum-600">Open dashboard</a>
+              <a href="index.html#signup" class="inline-flex justify-center rounded-xl border border-slate-200 px-4 py-3 text-sm font-extrabold text-slate-700 transition hover:border-plum-200 hover:text-plum-700">Join waitlist</a>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t border-slate-200 bg-slate-50 px-4 py-8 sm:px-6 lg:px-8">
+    <div class="mx-auto flex max-w-7xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <p class="text-sm font-semibold text-slate-500">&copy; 2026 HerBid. All rights reserved.</p>
+      <nav class="flex flex-wrap gap-x-5 gap-y-2 text-sm font-bold text-slate-600">
+        <a href="terms.html" class="transition hover:text-plum-700">Terms</a>
+        <a href="privacy.html" class="transition hover:text-plum-700">Privacy</a>
+        <a href="mailto:hello@herbid.io" class="transition hover:text-plum-700">Contact</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script>
+    const questions = [
+      {
+        title: "Business foundation",
+        help: "These basics make it easier to register, respond, and verify eligibility.",
+        options: [
+          ["registered", "My business is legally registered", 10],
+          ["ein", "I have an EIN and business bank account", 8],
+          ["capability", "I have a current capability statement", 12]
+        ]
+      },
+      {
+        title: "Procurement setup",
+        help: "These items help agencies and bid portals identify what you sell.",
+        options: [
+          ["sam", "I am registered on SAM.gov", 15],
+          ["naics", "I know my primary NAICS codes", 12],
+          ["agencies", "I know which agencies buy my services", 8]
+        ]
+      },
+      {
+        title: "Certifications",
+        help: "Certifications can improve match quality and set-aside visibility.",
+        options: [
+          ["wosb", "I have WOSB or EDWOSB certification", 12],
+          ["localcert", "I have MBE, DBE, SWaM, or another local certification", 8],
+          ["pending", "I have at least one certification in progress", 4]
+        ]
+      },
+      {
+        title: "Bid operations",
+        help: "A simple process helps you decide what to pursue before deadlines pile up.",
+        options: [
+          ["tracking", "I track bid deadlines in one place", 8],
+          ["saved", "I save and compare promising opportunities", 6],
+          ["proposal", "I have submitted at least one proposal before", 10],
+          ["pricing", "I have a pricing method for contract work", 7]
+        ]
+      }
+    ];
+
+    const levels = [
+      {
+        min: 90,
+        title: "Contract Growth Mode",
+        copy: "You look ready to pursue opportunities consistently. Focus on pipeline discipline, stronger capture notes, and higher-value bids.",
+        recs: ["Build a weekly bid review rhythm", "Track win/loss reasons", "Shortlist larger agency targets"]
+      },
+      {
+        min: 70,
+        title: "Ready to Pursue",
+        copy: "You have enough foundation to start reviewing and saving real opportunities. Tighten your process before chasing too many bids.",
+        recs: ["Save 5 matching opportunities", "Create a bid/no-bid checklist", "Set deadline reminders"]
+      },
+      {
+        min: 40,
+        title: "Almost Bid-Ready",
+        copy: "You are close. A few setup gaps may slow you down, especially NAICS, certifications, or proposal readiness.",
+        recs: ["Confirm your NAICS codes", "Update your capability statement", "Choose 2 target agencies"]
+      },
+      {
+        min: 0,
+        title: "Getting Started",
+        copy: "You are early, and that is okay. Focus on the basics before spending time inside crowded procurement portals.",
+        recs: ["Register the business basics", "Learn your NAICS codes", "Create a simple capability statement"]
+      }
+    ];
+
+    const questionsEl = document.getElementById("questions");
+    const form = document.getElementById("quizForm");
+    const scoreValue = document.getElementById("scoreValue");
+    const scoreTitle = document.getElementById("scoreTitle");
+    const scoreCopy = document.getElementById("scoreCopy");
+    const recommendations = document.getElementById("recommendations");
+    const resultCard = document.getElementById("resultCard");
+
+    questionsEl.innerHTML = questions.map((group, index) => `
+      <fieldset class="rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:p-5">
+        <legend class="px-1 text-lg font-extrabold">${index + 1}. ${group.title}</legend>
+        <p class="mt-2 text-sm leading-6 text-slate-600">${group.help}</p>
+        <div class="mt-4 grid gap-3">
+          ${group.options.map(([id, label, points]) => `
+            <label class="flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 bg-white p-4 transition hover:border-plum-200 hover:shadow-sm">
+              <input type="checkbox" name="${id}" value="${points}" class="mt-1 h-5 w-5 accent-purple-700" />
+              <span>
+                <span class="block font-bold text-slate-800">${label}</span>
+                <span class="mt-1 block text-xs font-semibold text-slate-500">${points} readiness points</span>
+              </span>
+            </label>
+          `).join("")}
+        </div>
+      </fieldset>
+    `).join("");
+
+    function calculateScore() {
+      const checked = [...form.querySelectorAll("input[type='checkbox']:checked")];
+      return checked.reduce((sum, input) => sum + Number(input.value), 0);
+    }
+
+    function updateResult() {
+      const score = Math.min(calculateScore(), 100);
+      const level = levels.find(item => score >= item.min);
+      scoreValue.textContent = String(score);
+      scoreTitle.textContent = level.title;
+      scoreCopy.textContent = level.copy;
+      recommendations.innerHTML = level.recs.map(rec => `
+        <div class="rounded-xl bg-white p-3 text-sm font-bold text-slate-700">${rec}</div>
+      `).join("");
+      resultCard.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+
+    form.addEventListener("submit", event => {
+      event.preventDefault();
+      updateResult();
+    });
+
+    form.addEventListener("change", () => {
+      const score = calculateScore();
+      scoreValue.textContent = score > 0 ? String(Math.min(score, 100)) : "--";
+    });
+  </script>
+</body>
+</html>
