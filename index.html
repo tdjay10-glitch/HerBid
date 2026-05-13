@@ -975,7 +975,7 @@
                     placeholder="founder@company.com"
                     className="mt-2 h-12 w-full rounded-lg border border-slate-200 px-4 text-sm font-medium outline-none transition focus:border-plum-500 focus:ring-4 focus:ring-plum-100"
                   />
-	                  <ButtonLink href="#dashboard" className="mt-4 w-full">
+	                  <ButtonLink href="dashboard.html" className="mt-4 w-full">
 	                    Reserve my free workspace
                     <Icon name="arrow" className="h-4 w-4" />
                   </ButtonLink>
@@ -1137,7 +1137,7 @@
                   <nav className="grid grid-cols-2 gap-2 lg:grid-cols-1">
                     {navItems.map((item, index) => (
                       <a
-                        href="#dashboard"
+                        href="dashboard.html"
                         key={item}
                         className={`rounded-lg px-3 py-2.5 text-sm font-semibold transition ${
                           index === 1
@@ -1261,12 +1261,12 @@
                   <a href="#benefits" className="transition hover:text-plum-700">Benefits</a>
                   <a href="#audience" className="transition hover:text-plum-700">Who it helps</a>
                   <a href="#product" className="transition hover:text-plum-700">Product</a>
-                  <a href="#dashboard" className="transition hover:text-plum-700">Dashboard</a>
+                  <a href="dashboard.html" className="transition hover:text-plum-700">Dashboard</a>
                   <a href="#pricing" className="transition hover:text-plum-700">Pricing</a>
                   <a href="#trust" className="transition hover:text-plum-700">Trust</a>
                 </nav>
                 <div className="hidden items-center gap-3 lg:flex">
-                  <a href="#dashboard" className="text-sm font-bold text-plum-700">View dashboard</a>
+	                  <a href="dashboard.html" className="text-sm font-bold text-plum-700">View dashboard</a>
                   <ButtonLink href="#signup" className="px-4 py-2.5">Join waitlist</ButtonLink>
                 </div>
                 <button
@@ -1285,7 +1285,7 @@
                       ["Benefits", "#benefits"],
                       ["Who it helps", "#audience"],
                       ["Product", "#product"],
-                      ["Dashboard", "#dashboard"],
+                      ["Dashboard", "dashboard.html"],
                       ["Pricing", "#pricing"],
                       ["Trust", "#trust"]
                     ].map(([label, href]) => (
@@ -1326,7 +1326,7 @@
                         Join the waitlist
                         <Icon name="arrow" className="h-4 w-4" />
                       </ButtonLink>
-                      <ButtonLink href="#dashboard" variant="secondary" className="px-6 py-3.5 text-base">
+                      <ButtonLink href="dashboard.html" variant="secondary" className="px-6 py-3.5 text-base">
 	                        Preview dashboard
                       </ButtonLink>
                     </div>
