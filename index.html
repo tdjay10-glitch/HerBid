@@ -934,8 +934,8 @@
                   Founding member pricing is designed to help small teams validate procurement opportunities before investing hours in a bid.
                 </p>
                 <div className="mt-3 flex flex-wrap justify-center gap-4 text-xs font-bold text-plum-700">
-                  <a href="#terms" className="transition hover:text-plum-900">Terms of Service</a>
-                  <a href="#privacy" className="transition hover:text-plum-900">Privacy Policy</a>
+                  <a href="terms.html" className="transition hover:text-plum-900">Terms of Service</a>
+                  <a href="privacy.html" className="transition hover:text-plum-900">Privacy Policy</a>
                   <span className="text-slate-500">Stripe-ready checkout flow</span>
                 </div>
               </div>
@@ -999,18 +999,24 @@
         return (
           <section className="bg-white px-4 pb-12 sm:px-6 lg:px-8">
             <div className="mx-auto grid max-w-6xl gap-4 text-sm leading-6 text-slate-600 md:grid-cols-2">
-              <div id="terms" className="rounded-lg border border-slate-200 bg-slate-50 p-5">
+              <a href="terms.html" className="group rounded-lg border border-slate-200 bg-slate-50 p-5 transition hover:-translate-y-0.5 hover:border-plum-200 hover:bg-white hover:shadow-sm">
                 <p className="font-extrabold text-ink">Terms of Service</p>
                 <p className="mt-2">
-                  Placeholder for HerBid subscription terms, renewal rules, cancellation policy, and acceptable use.
+                  Review HerBid subscription terms, renewal rules, cancellation policy, acceptable use, and procurement data limitations.
                 </p>
-              </div>
-              <div id="privacy" className="rounded-lg border border-slate-200 bg-slate-50 p-5">
+                <p className="mt-3 text-xs font-extrabold uppercase tracking-wide text-plum-700 transition group-hover:text-plum-900">
+                  Read terms
+                </p>
+              </a>
+              <a href="privacy.html" className="group rounded-lg border border-slate-200 bg-slate-50 p-5 transition hover:-translate-y-0.5 hover:border-plum-200 hover:bg-white hover:shadow-sm">
                 <p className="font-extrabold text-ink">Privacy Policy</p>
                 <p className="mt-2">
-                  Placeholder for HerBid data handling, account privacy, payment processor, and procurement data policies.
+                  Learn how HerBid handles account information, payment processors, analytics, procurement data, and privacy requests.
                 </p>
-              </div>
+                <p className="mt-3 text-xs font-extrabold uppercase tracking-wide text-plum-700 transition group-hover:text-plum-900">
+                  Read privacy policy
+                </p>
+              </a>
             </div>
           </section>
         );
