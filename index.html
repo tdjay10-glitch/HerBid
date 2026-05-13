@@ -997,7 +997,7 @@
 
       function LegalLinksSection() {
         return (
-          <section className="bg-white px-4 pb-12 sm:px-6 lg:px-8">
+          <section className="bg-white px-4 pb-10 sm:px-6 lg:px-8">
             <div className="mx-auto grid max-w-6xl gap-4 text-sm leading-6 text-slate-600 md:grid-cols-2">
               <a href="terms.html" className="group rounded-lg border border-slate-200 bg-slate-50 p-5 transition hover:-translate-y-0.5 hover:border-plum-200 hover:bg-white hover:shadow-sm">
                 <p className="font-extrabold text-ink">Terms of Service</p>
@@ -1019,6 +1019,53 @@
               </a>
             </div>
           </section>
+        );
+      }
+
+      function Footer() {
+        return (
+          <footer className="border-t border-slate-200 bg-slate-50 px-4 py-10 sm:px-6 lg:px-8">
+            <div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-[1.2fr_1fr] md:items-end">
+              <div>
+                <a href="#" className="inline-flex items-center gap-3" aria-label="HerBid home">
+                  <img
+                    src="assets/herbid-logo.png"
+                    alt="HerBid"
+                    loading="lazy"
+                    decoding="async"
+                    className="h-12 w-12 rounded-full object-cover shadow-sm ring-2 ring-harvest-300/70"
+                  />
+                  <div>
+                    <p className="text-lg font-extrabold tracking-tight text-ink">HerBid</p>
+                    <p className="text-sm font-semibold text-slate-500">Procurement clarity for women-owned businesses.</p>
+                  </div>
+                </a>
+                <p className="mt-5 max-w-xl text-sm leading-6 text-slate-600">
+                  A modern bid workspace for finding, saving, and tracking contract opportunities without portal overwhelm.
+                </p>
+              </div>
+              <div className="md:text-right">
+                <nav className="flex flex-wrap gap-x-5 gap-y-3 text-sm font-bold text-slate-600 md:justify-end">
+                  <a href="terms.html" className="transition hover:text-plum-700">Terms of Service</a>
+                  <a href="privacy.html" className="transition hover:text-plum-700">Privacy Policy</a>
+                  <a href="mailto:hello@herbid.io" className="transition hover:text-plum-700">Contact</a>
+                </nav>
+                <a href="https://shebservices.com" className="mt-5 inline-flex items-center gap-3 rounded-xl border border-plum-100 bg-white px-4 py-3 shadow-sm transition hover:-translate-y-0.5 hover:border-plum-200 hover:bg-plum-50" target="_blank" rel="noreferrer">
+                  <span className="text-xs font-extrabold uppercase tracking-wide text-slate-500">Powered by</span>
+                  <img
+                    src="assets/sheb-services-logo.png"
+                    alt="SHEB Services"
+                    loading="lazy"
+                    decoding="async"
+                    className="h-8 w-auto object-contain"
+                  />
+                </a>
+                <p className="mt-4 text-xs font-semibold text-slate-500">
+                  &copy; 2026 HerBid. All rights reserved.
+                </p>
+              </div>
+            </div>
+          </footer>
         );
       }
 
@@ -1338,6 +1385,8 @@
 	              <SignupPanel />
 
 	              <LegalLinksSection />
+
+	              <Footer />
 	            </main>
           </div>
         );
