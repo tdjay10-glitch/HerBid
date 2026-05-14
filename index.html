@@ -45,6 +45,8 @@
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/supabase-client.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -1140,6 +1142,32 @@
       }
 
       function SignupPanel() {
+        const [email, setEmail] = useState("");
+        const [status, setStatus] = useState("");
+
+        async function handleSubmit(event) {
+          event.preventDefault();
+          const cleanEmail = email.trim().toLowerCase();
+          if (!cleanEmail) return;
+
+          const result = await window.HerBidSupabase.insert("waitlist_submissions", {
+            email: cleanEmail,
+            source: "homepage_waitlist",
+            page_path: window.location.pathname
+          });
+
+          const localWaitlist = JSON.parse(localStorage.getItem("herbidWaitlist") || "[]");
+          localWaitlist.unshift({ email: cleanEmail, createdAt: new Date().toISOString() });
+          localStorage.setItem("herbidWaitlist", JSON.stringify(localWaitlist.slice(0, 50)));
+
+          setStatus(
+            result.ok
+              ? "You're on the HerBid waitlist."
+              : "Saved for this preview. Add Supabase keys to send this to your HerBid database."
+          );
+          setEmail("");
+        }
+
         return (
           <section id="signup" className="bg-white px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
             <div className="mx-auto max-w-6xl overflow-hidden rounded-2xl bg-plum-900 shadow-glow">
@@ -1160,20 +1188,22 @@
                     ))}
                   </div>
                 </div>
-                <form className="rounded-xl border border-white/10 bg-white p-4 text-ink shadow-soft sm:p-5">
+                <form onSubmit={handleSubmit} className="rounded-xl border border-white/10 bg-white p-4 text-ink shadow-soft sm:p-5">
                   <label className="text-sm font-bold text-slate-700" htmlFor="signup-email">
                     Work email
                   </label>
                   <input
                     id="signup-email"
                     type="email"
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
                     placeholder="demo@herbid.io"
                     className="mt-2 h-12 w-full rounded-lg border border-slate-200 px-4 text-sm font-medium outline-none transition focus:border-plum-500 focus:ring-4 focus:ring-plum-100"
                   />
-	                  <ButtonLink href="dashboard.html" className="mt-4 w-full">
-	                    Reserve my free workspace
+	                  <button type="submit" className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-plum-700 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-plum-600 focus:outline-none focus:ring-4 focus:ring-plum-200">
+		                    Reserve my free workspace
                     <Icon name="arrow" className="h-4 w-4" />
-                  </ButtonLink>
+	                  </button>
                   <a
                     href="mailto:hello@herbid.io"
                     className="mt-3 inline-flex w-full items-center justify-center rounded-lg border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 transition hover:border-plum-200 hover:text-plum-700"
@@ -1183,6 +1213,11 @@
                   <p className="mt-4 text-center text-xs font-medium leading-5 text-slate-500">
                     Built for women-owned, WOSB, EDWOSB, MBE, 8(a), DBE, and emerging government contractors.
                   </p>
+                  {status && (
+                    <p className="mt-3 rounded-lg bg-plum-50 px-3 py-2 text-center text-xs font-bold leading-5 text-plum-700">
+                      {status}
+                    </p>
+                  )}
                 </form>
               </div>
             </div>

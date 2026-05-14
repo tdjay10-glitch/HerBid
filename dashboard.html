@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>HerBid Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/supabase-client.js"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -304,7 +306,7 @@
                 Use this form during beta testing to capture what users expected, where they got stuck, and what would make the dashboard easier to trust.
               </p>
               <div id="feedbackSaved" class="mt-5 hidden rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-bold text-emerald-800">
-                Feedback saved for this beta preview. In production, this will connect to your database or form tool.
+                Feedback saved.
               </div>
             </div>
             <form id="feedbackForm" class="grid gap-4">
@@ -658,18 +660,32 @@
     });
     els.logoutBtn.addEventListener("click", logout);
     els.mobileLogout.addEventListener("click", logout);
-    els.feedbackForm.addEventListener("submit", event => {
+    els.feedbackForm.addEventListener("submit", async event => {
       event.preventDefault();
-      const feedback = JSON.parse(localStorage.getItem("herbidBetaFeedback") || "[]");
-      feedback.unshift({
-        name: els.testerName.value.trim() || "Anonymous tester",
-        type: els.feedbackType.value,
+      const payload = {
+        tester_name: els.testerName.value.trim() || "Anonymous tester",
+        feedback_type: els.feedbackType.value,
         rating: els.feedbackRating.value,
         notes: els.feedbackNotes.value.trim(),
+        page_path: window.location.pathname
+      };
+
+      if (!payload.notes) return;
+
+      const result = await window.HerBidSupabase.insert("beta_feedback", payload);
+      const feedback = JSON.parse(localStorage.getItem("herbidBetaFeedback") || "[]");
+      feedback.unshift({
+        name: payload.tester_name,
+        type: payload.feedback_type,
+        rating: payload.rating,
+        notes: payload.notes,
         createdAt: new Date().toISOString()
       });
       localStorage.setItem("herbidBetaFeedback", JSON.stringify(feedback.slice(0, 25)));
       els.feedbackForm.reset();
+      els.feedbackSaved.textContent = result.ok
+        ? "Feedback sent to HerBid. Thank you for testing."
+        : "Feedback saved for this preview. Add Supabase keys to send this to your HerBid database.";
       els.feedbackSaved.classList.remove("hidden");
     });
 
