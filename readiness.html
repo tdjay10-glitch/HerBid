@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Contract Readiness Score | HerBid</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/supabase-client.js"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -117,6 +119,7 @@
             <h3 id="scoreTitle" class="mt-4 text-2xl font-extrabold">Complete the quiz</h3>
             <p id="scoreCopy" class="mt-3 text-sm leading-6 text-slate-600">Your personalized readiness level and next steps will appear here.</p>
             <div id="recommendations" class="mt-5 grid gap-2"></div>
+            <p id="scoreSaveStatus" class="mt-4 hidden rounded-xl bg-white px-3 py-2 text-xs font-bold text-plum-700"></p>
           </div>
 
           <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -247,15 +250,35 @@
       return checked.reduce((sum, input) => sum + Number(input.value), 0);
     }
 
-    function updateResult() {
+    async function updateResult() {
       const score = Math.min(calculateScore(), 100);
       const level = levels.find(item => score >= item.min);
+      const selectedItems = [...form.querySelectorAll("input[type='checkbox']:checked")].map(input => input.name);
       scoreValue.textContent = String(score);
       scoreTitle.textContent = level.title;
       scoreCopy.textContent = level.copy;
       recommendations.innerHTML = level.recs.map(rec => `
         <div class="rounded-xl bg-white p-3 text-sm font-bold text-slate-700">${rec}</div>
       `).join("");
+      const result = await window.HerBidSupabase.insert("readiness_results", {
+        score,
+        level: level.title,
+        selected_items: selectedItems,
+        recommendations: level.recs,
+        page_path: window.location.pathname
+      });
+      localStorage.setItem("herbidReadinessResult", JSON.stringify({
+        score,
+        level: level.title,
+        selectedItems,
+        recommendations: level.recs,
+        createdAt: new Date().toISOString()
+      }));
+      const scoreSaveStatus = document.getElementById("scoreSaveStatus");
+      scoreSaveStatus.textContent = result.ok
+        ? "Readiness result sent to HerBid."
+        : "Readiness result saved for this preview. Add Supabase keys to send this to your HerBid database.";
+      scoreSaveStatus.classList.remove("hidden");
       resultCard.scrollIntoView({ behavior: "smooth", block: "nearest" });
     }
 
