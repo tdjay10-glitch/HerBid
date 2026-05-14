@@ -10,6 +10,58 @@
     );
   }
 
+  function authStorageKey() {
+    return "herbidSupabaseSession";
+  }
+
+  function getSession() {
+    try {
+      return JSON.parse(localStorage.getItem(authStorageKey()) || "null");
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function setSession(session) {
+    if (session && session.access_token) {
+      localStorage.setItem(authStorageKey(), JSON.stringify(session));
+    } else {
+      localStorage.removeItem(authStorageKey());
+    }
+  }
+
+  async function request(path, options = {}) {
+    if (!isConfigured()) {
+      return { ok: false, reason: "Supabase is not configured yet." };
+    }
+
+    try {
+      const response = await fetch(`${SUPABASE_URL}${path}`, {
+        ...options,
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          "Content-Type": "application/json",
+          ...(options.headers || {})
+        }
+      });
+      const text = await response.text();
+      const data = text ? JSON.parse(text) : null;
+
+      if (!response.ok) {
+        return { ok: false, status: response.status, reason: data?.msg || data?.message || text };
+      }
+
+      return { ok: true, data };
+    } catch (error) {
+      return { ok: false, reason: error.message };
+    }
+  }
+
+  function authHeaders() {
+    const session = getSession();
+    return session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {};
+  }
+
   async function insert(table, payload) {
     if (!isConfigured()) {
       return { ok: false, mode: "local", reason: "Supabase is not configured yet." };
@@ -39,8 +91,127 @@
     }
   }
 
+  async function signUp({ email, password, profile }) {
+    const result = await request("/auth/v1/signup", {
+      method: "POST",
+      body: JSON.stringify({ email, password })
+    });
+
+    if (!result.ok) return result;
+    if (result.data?.access_token) {
+      setSession(result.data);
+      await upsertProfile(profile);
+    }
+
+    return result;
+  }
+
+  async function signIn({ email, password }) {
+    const result = await request("/auth/v1/token?grant_type=password", {
+      method: "POST",
+      body: JSON.stringify({ email, password })
+    });
+
+    if (result.ok) setSession(result.data);
+    return result;
+  }
+
+  async function signOut() {
+    const session = getSession();
+    if (session?.access_token) {
+      await request("/auth/v1/logout", {
+        method: "POST",
+        headers: authHeaders()
+      });
+    }
+    setSession(null);
+  }
+
+  async function upsertProfile(profile) {
+    const session = getSession();
+    if (!session?.user?.id) {
+      return { ok: false, reason: "No signed-in user." };
+    }
+
+    return request("/rest/v1/user_profiles", {
+      method: "POST",
+      headers: {
+        ...authHeaders(),
+        Prefer: "resolution=merge-duplicates,return=representation"
+      },
+      body: JSON.stringify({
+        id: session.user.id,
+        email: session.user.email,
+        ...profile
+      })
+    });
+  }
+
+  async function getProfile() {
+    const session = getSession();
+    if (!session?.user?.id) {
+      return { ok: false, reason: "No signed-in user." };
+    }
+
+    return request(`/rest/v1/user_profiles?id=eq.${session.user.id}&select=*`, {
+      method: "GET",
+      headers: authHeaders()
+    });
+  }
+
+  async function listSavedOpportunities() {
+    return request("/rest/v1/saved_opportunities?select=opportunity_id&order=created_at.desc", {
+      method: "GET",
+      headers: authHeaders()
+    });
+  }
+
+  async function saveOpportunity(opportunity) {
+    const session = getSession();
+    if (!session?.user?.id) {
+      return { ok: false, reason: "No signed-in user." };
+    }
+
+    return request("/rest/v1/saved_opportunities?on_conflict=user_id,opportunity_id", {
+      method: "POST",
+      headers: {
+        ...authHeaders(),
+        Prefer: "resolution=merge-duplicates,return=minimal"
+      },
+      body: JSON.stringify({
+        user_id: session.user.id,
+        opportunity_id: opportunity.id,
+        title: opportunity.title,
+        agency: opportunity.agency,
+        deadline: opportunity.deadline,
+        naics: opportunity.naics,
+        set_aside: opportunity.setAside,
+        source_url: opportunity.link
+      })
+    });
+  }
+
+  async function removeSavedOpportunity(opportunityId) {
+    return request(`/rest/v1/saved_opportunities?opportunity_id=eq.${opportunityId}`, {
+      method: "DELETE",
+      headers: {
+        ...authHeaders(),
+        Prefer: "return=minimal"
+      }
+    });
+  }
+
   window.HerBidSupabase = {
     isConfigured,
-    insert
+    getSession,
+    insert,
+    signUp,
+    signIn,
+    signOut,
+    upsertProfile,
+    getProfile,
+    listSavedOpportunities,
+    saveOpportunity,
+    removeSavedOpportunity
   };
 })();

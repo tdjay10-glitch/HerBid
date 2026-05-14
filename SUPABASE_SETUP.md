@@ -19,8 +19,10 @@ The schema creates:
 - `waitlist_submissions`
 - `beta_feedback`
 - `readiness_results`
+- `user_profiles`
+- `saved_opportunities`
 
-Row Level Security is enabled. Anonymous visitors can insert rows, but no public read policy is created.
+Row Level Security is enabled. Anonymous visitors can insert public capture rows, but no public read policy is created. Signed-in users can read and update only their own profile and saved opportunities.
 
 ## 3. Add the public project credentials
 
@@ -48,6 +50,16 @@ The site now attempts to send:
 - Homepage waitlist submissions to `waitlist_submissions`
 - Dashboard beta feedback to `beta_feedback`
 - Readiness quiz results to `readiness_results`
+- Dashboard signup/login through Supabase Auth
+- User profile details to `user_profiles`
+- Saved bid selections to `saved_opportunities`
 
 If Supabase is not configured yet, the forms show a preview success message and save locally in the browser.
 
+## 5. Auth settings
+
+In Supabase, open Authentication settings before beta testing:
+
+- Confirm email/password signups are enabled.
+- Decide whether new users must confirm email before login.
+- Add your production site URL and local preview URL to the allowed redirect URLs if you use email confirmation links.
