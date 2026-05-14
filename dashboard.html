@@ -120,6 +120,7 @@
           </a>
         </div>
         <nav class="flex-1 space-y-1 p-4 text-sm font-bold text-slate-600" aria-label="Dashboard navigation">
+          <a href="index.html" class="rounded-xl px-4 py-3 transition hover:bg-slate-50 hover:text-plum-700">Home</a>
           <a href="#opportunities" class="flex items-center justify-between rounded-xl bg-plum-50 px-4 py-3 text-plum-700">
             Opportunities <span id="navMatchCount" class="rounded-full bg-white px-2 py-1 text-xs">0</span>
           </a>
@@ -128,6 +129,7 @@
           </a>
           <a href="#alerts" class="rounded-xl px-4 py-3 transition hover:bg-slate-50 hover:text-plum-700">Email alerts</a>
           <a href="readiness.html" class="rounded-xl px-4 py-3 transition hover:bg-slate-50 hover:text-plum-700">Readiness Score</a>
+          <a href="#feedback" class="rounded-xl px-4 py-3 transition hover:bg-slate-50 hover:text-plum-700">Beta feedback</a>
           <a href="settings.html" class="rounded-xl px-4 py-3 transition hover:bg-slate-50 hover:text-plum-700">Settings</a>
         </nav>
         <div class="m-4 rounded-2xl border border-plum-100 bg-plum-50 p-4">
@@ -147,10 +149,12 @@
           <button id="closeMenu" class="rounded-xl border border-slate-200 px-3 py-2 text-sm font-bold">Close</button>
         </div>
         <nav class="mt-6 grid gap-2 text-sm font-bold text-slate-700">
+          <a href="index.html" class="rounded-xl px-4 py-3 hover:bg-slate-50">Home</a>
           <a href="#opportunities" class="rounded-xl bg-plum-50 px-4 py-3 text-plum-700">Opportunities</a>
           <a href="#saved" class="rounded-xl px-4 py-3 hover:bg-slate-50">Saved bids</a>
           <a href="#alerts" class="rounded-xl px-4 py-3 hover:bg-slate-50">Email alerts</a>
           <a href="readiness.html" class="rounded-xl px-4 py-3 hover:bg-slate-50">Readiness Score</a>
+          <a href="#feedback" class="rounded-xl px-4 py-3 hover:bg-slate-50">Beta feedback</a>
           <button id="mobileLogout" class="rounded-xl px-4 py-3 text-left text-rose-700 hover:bg-rose-50">Sign out</button>
         </nav>
       </div>
@@ -162,7 +166,7 @@
           <button id="openMenu" class="rounded-xl border border-slate-200 px-3 py-2 text-sm font-bold lg:hidden">Menu</button>
           <div>
             <p class="text-xs font-extrabold uppercase tracking-wide text-plum-700">Opportunity workspace</p>
-            <h1 class="text-xl font-extrabold tracking-tight sm:text-2xl">Good afternoon, <span id="userName">Founder</span></h1>
+            <h1 class="text-2xl font-extrabold tracking-tight sm:text-3xl">Good afternoon, <span id="userName">Founder</span></h1>
           </div>
           <button id="logoutBtn" class="ml-auto hidden rounded-xl border border-slate-200 px-4 py-2 text-sm font-bold text-slate-600 transition hover:border-plum-200 hover:text-plum-700 sm:inline-flex">Sign out</button>
         </div>
@@ -194,7 +198,7 @@
           <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <p class="text-xs font-extrabold uppercase tracking-[0.2em] text-harvest-500">Opportunity feed</p>
-              <h2 class="mt-2 text-2xl font-extrabold tracking-tight sm:text-3xl">Contracts that match your profile</h2>
+              <h2 class="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Contracts that match your profile</h2>
               <p class="mt-2 max-w-2xl text-sm leading-6 text-slate-600">Search by keyword and filter by NAICS, state, certification type, and set-aside status.</p>
             </div>
             <button id="resetFilters" class="rounded-xl border border-slate-200 px-4 py-3 text-sm font-extrabold text-slate-600 transition hover:border-plum-200 hover:text-plum-700">Reset filters</button>
@@ -239,7 +243,7 @@
           <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p class="text-xs font-extrabold uppercase tracking-[0.2em] text-plum-700">Saved bids</p>
-              <h2 class="mt-2 text-2xl font-extrabold tracking-tight">Your pursuit shortlist</h2>
+              <h2 class="mt-2 text-3xl font-extrabold tracking-tight">Your pursuit shortlist</h2>
             </div>
             <p class="text-sm font-semibold text-slate-500">Saved locally for this MVP preview</p>
           </div>
@@ -251,7 +255,7 @@
         <div class="grid gap-4 lg:grid-cols-[1fr_360px]">
           <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-soft sm:p-6">
             <p class="text-xs font-extrabold uppercase tracking-[0.2em] text-harvest-500">Email alerts</p>
-            <h2 class="mt-2 text-2xl font-extrabold tracking-tight">Get notified when matching bids appear</h2>
+            <h2 class="mt-2 text-3xl font-extrabold tracking-tight">Get notified when matching bids appear</h2>
             <p class="mt-3 max-w-2xl text-sm leading-6 text-slate-600">Email alerts are marked medium priority for MVP, so this screen stores alert preferences and makes the future production workflow clear.</p>
             <div class="mt-5 grid gap-3 sm:grid-cols-2">
               <label class="flex items-center justify-between rounded-2xl border border-slate-200 p-4">
@@ -274,6 +278,59 @@
             </ul>
             <a href="readiness.html" class="mt-5 inline-flex w-full justify-center rounded-xl bg-plum-700 px-4 py-3 text-sm font-extrabold text-white transition hover:bg-plum-600">Check readiness score</a>
           </aside>
+        </div>
+      </section>
+
+      <section id="feedback" class="px-4 pb-10 sm:px-6 lg:px-8">
+        <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-soft sm:p-6">
+          <div class="grid gap-6 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
+            <div>
+              <p class="text-xs font-extrabold uppercase tracking-[0.2em] text-plum-700">Beta tester feedback</p>
+              <h2 class="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Tell us what felt confusing.</h2>
+              <p class="mt-3 text-sm leading-6 text-slate-600">
+                Use this form during beta testing to capture what users expected, where they got stuck, and what would make the dashboard easier to trust.
+              </p>
+              <div id="feedbackSaved" class="mt-5 hidden rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-bold text-emerald-800">
+                Feedback saved for this beta preview. In production, this will connect to your database or form tool.
+              </div>
+            </div>
+            <form id="feedbackForm" class="grid gap-4">
+              <div class="grid gap-4 sm:grid-cols-2">
+                <label class="grid gap-2 text-sm font-bold text-slate-700">
+                  Tester name
+                  <input id="testerName" type="text" placeholder="Optional" class="h-12 rounded-xl border border-slate-200 px-4 outline-none transition focus:border-plum-500 focus:ring-4 focus:ring-plum-100" />
+                </label>
+                <label class="grid gap-2 text-sm font-bold text-slate-700">
+                  Feedback type
+                  <select id="feedbackType" class="h-12 rounded-xl border border-slate-200 px-4 outline-none transition focus:border-plum-500 focus:ring-4 focus:ring-plum-100">
+                    <option>Confusing navigation</option>
+                    <option>Search or filters</option>
+                    <option>Saving bids</option>
+                    <option>Mobile layout</option>
+                    <option>Missing feature</option>
+                    <option>Other</option>
+                  </select>
+                </label>
+              </div>
+              <label class="grid gap-2 text-sm font-bold text-slate-700">
+                How easy was this to use?
+                <select id="feedbackRating" class="h-12 rounded-xl border border-slate-200 px-4 outline-none transition focus:border-plum-500 focus:ring-4 focus:ring-plum-100">
+                  <option>5 - Very easy</option>
+                  <option>4 - Mostly easy</option>
+                  <option>3 - Somewhat confusing</option>
+                  <option>2 - Hard to use</option>
+                  <option>1 - I got stuck</option>
+                </select>
+              </label>
+              <label class="grid gap-2 text-sm font-bold text-slate-700">
+                What should we improve?
+                <textarea id="feedbackNotes" required rows="5" placeholder="Example: I expected the filters to update the cards immediately..." class="rounded-xl border border-slate-200 px-4 py-3 outline-none transition focus:border-plum-500 focus:ring-4 focus:ring-plum-100"></textarea>
+              </label>
+              <button type="submit" class="rounded-xl bg-plum-700 px-5 py-3 text-sm font-extrabold text-white shadow-glow transition hover:-translate-y-0.5 hover:bg-plum-600">
+                Save beta feedback
+              </button>
+            </form>
+          </div>
         </div>
       </section>
     </main>
@@ -400,7 +457,13 @@
       closeMenu: document.getElementById("closeMenu"),
       mobileMenu: document.getElementById("mobileMenu"),
       logoutBtn: document.getElementById("logoutBtn"),
-      mobileLogout: document.getElementById("mobileLogout")
+      mobileLogout: document.getElementById("mobileLogout"),
+      feedbackForm: document.getElementById("feedbackForm"),
+      feedbackSaved: document.getElementById("feedbackSaved"),
+      testerName: document.getElementById("testerName"),
+      feedbackType: document.getElementById("feedbackType"),
+      feedbackRating: document.getElementById("feedbackRating"),
+      feedbackNotes: document.getElementById("feedbackNotes")
     };
 
     let saved = JSON.parse(localStorage.getItem("herbidSavedBids") || "[]");
@@ -582,6 +645,20 @@
     });
     els.logoutBtn.addEventListener("click", logout);
     els.mobileLogout.addEventListener("click", logout);
+    els.feedbackForm.addEventListener("submit", event => {
+      event.preventDefault();
+      const feedback = JSON.parse(localStorage.getItem("herbidBetaFeedback") || "[]");
+      feedback.unshift({
+        name: els.testerName.value.trim() || "Anonymous tester",
+        type: els.feedbackType.value,
+        rating: els.feedbackRating.value,
+        notes: els.feedbackNotes.value.trim(),
+        createdAt: new Date().toISOString()
+      });
+      localStorage.setItem("herbidBetaFeedback", JSON.stringify(feedback.slice(0, 25)));
+      els.feedbackForm.reset();
+      els.feedbackSaved.classList.remove("hidden");
+    });
 
     const storedUser = localStorage.getItem("herbidUserEmail");
     if (storedUser) showDashboard(storedUser);

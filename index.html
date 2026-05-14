@@ -253,8 +253,6 @@
         { name: "USDA Cloud Migration", tag: "EDWOSB | Jul 9" }
       ];
 
-      const previewFilters = ["NAICS 541512", "Virginia", "WOSB", "Due < 30 days"];
-
       const productPanels = [
         {
           title: "Opportunity search",
@@ -345,7 +343,7 @@
         }
       ];
 
-      const navItems = ["Dashboard", "Opportunities", "Saved", "Calendar", "Certifications", "Reports"];
+      const navItems = ["Home", "Dashboard", "Opportunities", "Saved", "Calendar", "Certifications", "Reports"];
 
       function Icon({ name, className = "h-5 w-5" }) {
         const paths = {
@@ -507,13 +505,28 @@
       }
 
       function DashboardPreview({ items, onSave }) {
+        const [previewQuery, setPreviewQuery] = useState("");
+        const [previewFilter, setPreviewFilter] = useState("All");
+        const previewOptions = ["All", "WOSB", "EDWOSB", "VA", "Due soon"];
+        const previewItems = items.filter((opportunity) => {
+          const text = `${opportunity.title} ${opportunity.agency} ${opportunity.naics} ${opportunity.certification} ${opportunity.state}`.toLowerCase();
+          const matchesQuery = !previewQuery || text.includes(previewQuery.toLowerCase());
+          const matchesFilter =
+            previewFilter === "All" ||
+            opportunity.certification === previewFilter ||
+            opportunity.state === previewFilter ||
+            (previewFilter === "Due soon" && opportunity.deadline.includes("May"));
+
+          return matchesQuery && matchesFilter;
+        });
+
         return (
           <div className="dashboard-grid fade-up rounded-2xl border border-white/70 bg-white p-3 shadow-glow backdrop-blur">
             <div className="rounded-xl border border-plum-100 bg-slate-50/90">
               <div className="flex items-center justify-between border-b border-plum-100 px-4 py-3">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-wide text-plum-600">Live bid room</p>
-                  <p className="text-sm font-bold text-ink">Qualified opportunities</p>
+                  <p className="text-sm font-extrabold uppercase tracking-wide text-plum-600">Live bid room</p>
+                  <p className="text-lg font-extrabold text-ink">Qualified opportunities</p>
                 </div>
                 <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">
                   <span className="soft-pulse h-2 w-2 rounded-full bg-emerald-500"></span>
@@ -537,7 +550,7 @@
                       <div
                         key={item}
                         className={`rounded-lg px-3 py-2 text-sm font-semibold ${
-                          index === 1 ? "bg-plum-100 text-plum-700" : "text-slate-500"
+	                          index === 2 ? "bg-plum-100 text-plum-700" : "text-slate-500"
                         }`}
                       >
                         {item}
@@ -557,25 +570,42 @@
                     </div>
 	                </aside>
 	                <main className="p-4">
-	                  <div className="mb-4 flex flex-col gap-3 lg:flex-row">
-	                    <div className="flex min-w-0 flex-1 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3">
-	                      <Icon name="search" className="h-4 w-4 text-slate-400" />
-	                      <span className="truncate py-3 text-sm font-medium text-slate-500">
-	                        Search opportunities, agencies, keywords
-	                      </span>
+		                  <div className="mb-4 flex flex-col gap-3 lg:flex-row">
+		                    <label className="flex min-w-0 flex-1 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 focus-within:border-plum-500 focus-within:ring-4 focus-within:ring-plum-100">
+		                      <Icon name="search" className="h-4 w-4 text-slate-400" />
+		                      <input
+                            value={previewQuery}
+                            onChange={(event) => setPreviewQuery(event.target.value)}
+                            className="min-w-0 flex-1 bg-transparent py-3 text-sm font-medium text-slate-700 outline-none placeholder:text-slate-400"
+                            placeholder="Search opportunities, agencies, keywords"
+                          />
+		                    </label>
+		                    <button
+                          onClick={() => {
+                            setPreviewQuery("");
+                            setPreviewFilter("All");
+                          }}
+                          className="inline-flex items-center justify-center gap-2 rounded-lg bg-plum-700 px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-plum-600"
+                        >
+		                      <Icon name="filter" className="h-4 w-4" />
+		                      Reset filters
+		                    </button>
+		                  </div>
+	                    <div className="mb-4 flex flex-wrap gap-2">
+	                      {previewOptions.map((filter) => (
+	                        <button
+                            key={filter}
+                            onClick={() => setPreviewFilter(filter)}
+                            className={`rounded-full border px-3 py-1 text-[11px] font-bold transition ${
+                              previewFilter === filter
+                                ? "border-plum-700 bg-plum-700 text-white"
+                                : "border-plum-100 bg-white text-plum-700 hover:border-plum-300"
+                            }`}
+                          >
+	                          {filter === "All" ? "All opportunities" : filter}
+	                        </button>
+	                      ))}
 	                    </div>
-	                    <button className="inline-flex items-center justify-center gap-2 rounded-lg bg-plum-700 px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-plum-600">
-	                      <Icon name="filter" className="h-4 w-4" />
-	                      Filters
-	                    </button>
-	                  </div>
-                    <div className="mb-4 flex flex-wrap gap-2">
-                      {previewFilters.map((filter) => (
-                        <span key={filter} className="rounded-full border border-plum-100 bg-white px-3 py-1 text-[11px] font-bold text-plum-700">
-                          {filter}
-                        </span>
-                      ))}
-                    </div>
                     <div className="mb-4 rounded-lg border border-harvest-300 bg-harvest-100 p-3">
                       <div className="flex items-center justify-between gap-3">
                         <div>
@@ -592,15 +622,21 @@
                       </div>
                     </div>
 	                  <div className="grid gap-3">
-                    {items.slice(0, 2).map((opportunity) => (
-                      <OpportunityCard
+	                    {previewItems.slice(0, 2).map((opportunity) => (
+	                      <OpportunityCard
                         key={opportunity.title}
                         opportunity={opportunity}
                         onSave={onSave}
                         compact
-                      />
-                    ))}
-                  </div>
+	                      />
+	                    ))}
+                      {!previewItems.length && (
+                        <div className="rounded-lg border border-dashed border-slate-300 bg-white p-5 text-center">
+                          <p className="text-sm font-extrabold text-ink">No preview matches</p>
+                          <p className="mt-1 text-xs font-semibold text-slate-500">Try a broader search or reset filters.</p>
+                        </div>
+                      )}
+	                  </div>
                 </main>
               </div>
             </div>
@@ -1138,10 +1174,10 @@
                   <nav className="grid grid-cols-2 gap-2 lg:grid-cols-1">
                     {navItems.map((item, index) => (
                       <a
-                        href="dashboard.html"
+	                        href={item === "Home" ? "index.html" : "dashboard.html"}
                         key={item}
                         className={`rounded-lg px-3 py-2.5 text-sm font-semibold transition ${
-                          index === 1
+	                          index === 2
                             ? "bg-white text-plum-900"
                             : "text-plum-100 hover:bg-white/10 hover:text-white"
                         }`}
