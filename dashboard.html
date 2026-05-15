@@ -525,6 +525,42 @@
         </div>
       </section>
     </main>
+
+    <button id="openNia" type="button" class="fixed bottom-5 right-5 z-40 inline-flex items-center gap-3 rounded-full bg-plum-700 px-5 py-4 text-sm font-extrabold text-white shadow-glow transition hover:-translate-y-0.5 hover:bg-plum-600">
+      <span class="flex h-8 w-8 items-center justify-center rounded-full bg-white text-plum-700">N</span>
+      Ask Nia
+    </button>
+
+    <div id="niaOverlay" class="fixed inset-0 z-50 hidden bg-ink/40">
+      <aside id="niaPanel" class="ml-auto flex h-full w-full max-w-[440px] flex-col bg-white shadow-2xl">
+        <header class="border-b border-slate-200 p-5">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <p class="text-xs font-extrabold uppercase tracking-[0.2em] text-harvest-500">HerBid assistant</p>
+              <h2 class="mt-1 text-2xl font-extrabold tracking-tight">Nia</h2>
+              <p class="mt-2 text-sm font-semibold leading-6 text-slate-600">Procurement clarity, next steps, and readiness guidance.</p>
+            </div>
+            <button id="closeNia" type="button" class="rounded-xl border border-slate-200 px-3 py-2 text-sm font-bold text-slate-600 transition hover:border-plum-200 hover:text-plum-700">Close</button>
+          </div>
+        </header>
+        <div class="border-b border-slate-200 p-4">
+          <div class="grid gap-2 sm:grid-cols-2">
+            <button data-nia-prompt="onboarding" class="rounded-xl bg-plum-50 px-3 py-2 text-left text-xs font-extrabold text-plum-700 transition hover:bg-plum-100">Start onboarding</button>
+            <button data-nia-prompt="terms" class="rounded-xl bg-slate-50 px-3 py-2 text-left text-xs font-extrabold text-slate-700 transition hover:bg-slate-100">Explain terms</button>
+            <button data-nia-prompt="certifications" class="rounded-xl bg-slate-50 px-3 py-2 text-left text-xs font-extrabold text-slate-700 transition hover:bg-slate-100">Certifications</button>
+            <button data-nia-prompt="readiness" class="rounded-xl bg-harvest-50 px-3 py-2 text-left text-xs font-extrabold text-amber-800 transition hover:bg-harvest-100">Readiness steps</button>
+          </div>
+        </div>
+        <div id="niaMessages" class="flex-1 space-y-3 overflow-y-auto bg-slate-50 p-4"></div>
+        <form id="niaForm" class="border-t border-slate-200 bg-white p-4">
+          <label class="sr-only" for="niaInput">Ask Nia a procurement question</label>
+          <div class="flex gap-2">
+            <input id="niaInput" type="text" placeholder="Ask about a term, certification, or next step..." class="min-w-0 flex-1 rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium outline-none transition focus:border-plum-500 focus:ring-4 focus:ring-plum-100" />
+            <button type="submit" class="rounded-xl bg-plum-700 px-4 py-3 text-sm font-extrabold text-white transition hover:bg-plum-600">Send</button>
+          </div>
+        </form>
+      </aside>
+    </div>
   </div>
 
   <script>
@@ -692,7 +728,13 @@
       testerName: document.getElementById("testerName"),
       feedbackType: document.getElementById("feedbackType"),
       feedbackRating: document.getElementById("feedbackRating"),
-      feedbackNotes: document.getElementById("feedbackNotes")
+      feedbackNotes: document.getElementById("feedbackNotes"),
+      openNia: document.getElementById("openNia"),
+      closeNia: document.getElementById("closeNia"),
+      niaOverlay: document.getElementById("niaOverlay"),
+      niaMessages: document.getElementById("niaMessages"),
+      niaForm: document.getElementById("niaForm"),
+      niaInput: document.getElementById("niaInput")
     };
 
     let saved = [];
@@ -700,6 +742,17 @@
     let activeSetAside = "All";
     let authMode = "signin";
     let currentProfile = null;
+    let niaStarted = false;
+
+    const niaResponses = {
+      onboarding: "Start with three actions: complete your profile, review best-match opportunities, and save two bids worth researching. After that, check readiness so you know what documents or registrations may be missing.",
+      terms: "Common terms: NAICS is the industry code buyers use to classify work. Set-aside means the buyer reserved competition for a category of business. Solicitation is the official request. Deadline is the submission due date. Award is the contract decision.",
+      certifications: "WOSB supports women-owned small businesses in federal contracting. EDWOSB is for economically disadvantaged WOSBs. SWaM is Virginia's Small, Women-owned, and Minority-owned certification. 8(a) supports eligible socially and economically disadvantaged firms. DBE supports disadvantaged businesses in transportation-related work. HUBZone supports firms in historically underutilized business zones.",
+      readiness: "Readiness checklist: confirm your SAM.gov registration, verify NAICS codes, gather capability statement, review certification status, save matched bids, then identify documents needed before the deadline.",
+      next: "Recommended next step: save the opportunity, open the source link, confirm eligibility, note the deadline, and list the documents required. If anything is unclear, treat the buyer's official posting as the final source of truth.",
+      saved: "Saved bids are your pursuit shortlist. Review them weekly, remove poor fits, and prioritize deadlines within 14 days or bids that match your certification and NAICS codes.",
+      fallback: "I can help with procurement terms, certifications, opportunity summaries, readiness steps, and what to do next. Try asking: 'What is WOSB?', 'Explain NAICS', or 'What should I do after saving a bid?'"
+    };
 
     function uniqueValues(key) {
       return [...new Set(opportunities.map(item => item[key]))].sort();
@@ -834,6 +887,50 @@
             </div>
           `).join("")
         : `<div class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4 text-sm font-bold text-slate-600">No active opportunities yet.</div>`;
+    }
+
+    function niaMessage(content, sender = "nia") {
+      const isUser = sender === "user";
+      const alignment = isUser ? "ml-10 bg-plum-700 text-white" : "mr-10 border border-slate-200 bg-white text-slate-700";
+      els.niaMessages.insertAdjacentHTML("beforeend", `
+        <div class="rounded-2xl p-4 text-sm font-semibold leading-6 shadow-sm ${alignment}">
+          ${content}
+        </div>
+      `);
+      els.niaMessages.scrollTop = els.niaMessages.scrollHeight;
+    }
+
+    function summarizeBestOpportunity() {
+      const sorted = [...opportunities].sort((a, b) => profileMatchScore(b) - profileMatchScore(a));
+      const item = sorted[0];
+      if (!item) return "No opportunities are loaded yet. Once the feed has active rows, I can summarize the strongest match.";
+      return `${item.title} from ${item.agency} appears relevant because it uses NAICS ${item.naics}, has a ${item.setAside} set-aside, and is due ${item.deadline}. In plain language: ${item.summary} Next step: open the source, confirm eligibility, and save it if it fits your business.`;
+    }
+
+    function niaReply(input) {
+      const text = input.toLowerCase();
+      if (text.includes("onboard") || text.includes("start") || text.includes("new")) return niaResponses.onboarding;
+      if (text.includes("wosb") || text.includes("swam") || text.includes("8a") || text.includes("8(a)") || text.includes("dbe") || text.includes("hubzone") || text.includes("cert")) return niaResponses.certifications;
+      if (text.includes("naics") || text.includes("set-aside") || text.includes("solicitation") || text.includes("award") || text.includes("deadline") || text.includes("term")) return niaResponses.terms;
+      if (text.includes("summar") || text.includes("opportunity") || text.includes("bid")) return summarizeBestOpportunity();
+      if (text.includes("ready") || text.includes("readiness") || text.includes("sam") || text.includes("capability")) return niaResponses.readiness;
+      if (text.includes("next") || text.includes("what do i do")) return niaResponses.next;
+      if (text.includes("saved") || text.includes("shortlist")) return niaResponses.saved;
+      return niaResponses.fallback;
+    }
+
+    function openNiaPanel(prompt) {
+      els.niaOverlay.classList.remove("hidden");
+      if (!niaStarted) {
+        niaMessage("Hi, I’m Nia. I can help you understand procurement terms, compare opportunities, and choose your next step inside HerBid.");
+        niaStarted = true;
+      }
+      if (prompt) niaMessage(niaResponses[prompt] || niaReply(prompt));
+      els.niaInput.focus();
+    }
+
+    function closeNiaPanel() {
+      els.niaOverlay.classList.add("hidden");
     }
 
     async function loadOpportunities() {
@@ -1044,6 +1141,9 @@
               <a href="${item.link}" target="_blank" rel="noreferrer" class="inline-flex flex-1 items-center justify-center rounded-xl bg-plum-700 px-4 py-3 text-sm font-extrabold text-white transition hover:bg-plum-600">
                 Open source
               </a>
+              <button data-nia-opportunity="${item.id}" class="inline-flex flex-1 items-center justify-center rounded-xl border border-plum-100 bg-plum-50 px-4 py-3 text-sm font-extrabold text-plum-700 transition hover:bg-plum-100">
+                Ask Nia
+              </button>
             </div>
           </div>
         </article>
@@ -1309,12 +1409,27 @@
     });
 
     els.opportunityCancelEdit.addEventListener("click", resetOpportunityForm);
+    els.openNia.addEventListener("click", () => openNiaPanel());
+    els.closeNia.addEventListener("click", closeNiaPanel);
+    els.niaOverlay.addEventListener("click", event => {
+      if (event.target === els.niaOverlay) closeNiaPanel();
+    });
+    els.niaForm.addEventListener("submit", event => {
+      event.preventDefault();
+      const question = els.niaInput.value.trim();
+      if (!question) return;
+      niaMessage(question, "user");
+      niaMessage(niaReply(question), "nia");
+      els.niaInput.value = "";
+    });
 
     document.addEventListener("click", event => {
       const saveButton = event.target.closest("[data-save]");
       const setAsideButton = event.target.closest("[data-setaside]");
       const editOpportunityButton = event.target.closest("[data-edit-opportunity]");
       const deactivateOpportunityButton = event.target.closest("[data-deactivate-opportunity]");
+      const niaPromptButton = event.target.closest("[data-nia-prompt]");
+      const niaOpportunityButton = event.target.closest("[data-nia-opportunity]");
       if (saveButton) toggleSave(saveButton.dataset.save);
       if (setAsideButton) {
         activeSetAside = setAsideButton.dataset.setaside;
@@ -1325,6 +1440,12 @@
         if (opportunity) fillOpportunityForm(opportunity);
       }
       if (deactivateOpportunityButton) deactivateOpportunity(deactivateOpportunityButton.dataset.deactivateOpportunity);
+      if (niaPromptButton) openNiaPanel(niaPromptButton.dataset.niaPrompt);
+      if (niaOpportunityButton) {
+        const opportunity = opportunities.find(item => item.id === niaOpportunityButton.dataset.niaOpportunity);
+        openNiaPanel();
+        if (opportunity) niaMessage(`${opportunity.title}: ${opportunity.summary} This is a ${opportunity.setAside} opportunity under NAICS ${opportunity.naics}, due ${opportunity.deadline}. Next step: verify eligibility in the source posting, then save it if it fits your business.`, "nia");
+      }
     });
 
     els.resetFilters.addEventListener("click", () => {
