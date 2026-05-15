@@ -161,6 +161,21 @@ for select
 to authenticated
 using (is_active = true);
 
+drop policy if exists "Signed-in users can add beta opportunities" on public.opportunities;
+create policy "Signed-in users can add beta opportunities"
+on public.opportunities
+for insert
+to authenticated
+with check (true);
+
+drop policy if exists "Signed-in users can update beta opportunities" on public.opportunities;
+create policy "Signed-in users can update beta opportunities"
+on public.opportunities
+for update
+to authenticated
+using (true)
+with check (true);
+
 insert into public.opportunities (
   id, title, agency, state, naics, certification, set_aside, deadline, deadline_date,
   days_left, estimated_value, tags, summary, source_url, is_active

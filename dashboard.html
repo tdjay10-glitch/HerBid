@@ -163,6 +163,7 @@
           <a href="#alerts" class="rounded-xl px-4 py-3 transition hover:bg-slate-50 hover:text-plum-700">Email alerts</a>
           <a href="readiness.html" class="rounded-xl px-4 py-3 transition hover:bg-slate-50 hover:text-plum-700">Readiness Score</a>
           <a href="#feedback" class="rounded-xl px-4 py-3 transition hover:bg-slate-50 hover:text-plum-700">Beta feedback</a>
+          <a href="#manage-opportunities" class="rounded-xl px-4 py-3 transition hover:bg-slate-50 hover:text-plum-700">Add opportunity</a>
           <a href="#account-settings" class="rounded-xl px-4 py-3 transition hover:bg-slate-50 hover:text-plum-700">Account settings</a>
         </nav>
         <div class="m-4 rounded-2xl border border-plum-100 bg-plum-50 p-4">
@@ -188,6 +189,7 @@
           <a href="#alerts" class="rounded-xl px-4 py-3 hover:bg-slate-50">Email alerts</a>
           <a href="readiness.html" class="rounded-xl px-4 py-3 hover:bg-slate-50">Readiness Score</a>
           <a href="#feedback" class="rounded-xl px-4 py-3 hover:bg-slate-50">Beta feedback</a>
+          <a href="#manage-opportunities" class="rounded-xl px-4 py-3 hover:bg-slate-50">Add opportunity</a>
           <a href="#account-settings" class="rounded-xl px-4 py-3 hover:bg-slate-50">Account settings</a>
           <button id="mobileLogout" class="rounded-xl px-4 py-3 text-left text-rose-700 hover:bg-rose-50">Sign out</button>
         </nav>
@@ -396,6 +398,75 @@
         </div>
       </section>
 
+      <section id="manage-opportunities" class="px-4 pb-10 sm:px-6 lg:px-8">
+        <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-soft sm:p-6">
+          <div class="grid gap-6 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
+            <div>
+              <p class="text-xs font-extrabold uppercase tracking-[0.2em] text-harvest-500">Opportunity manager</p>
+              <h2 class="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Add a beta opportunity.</h2>
+              <p class="mt-3 text-sm leading-6 text-slate-600">Use this lightweight manager to add realistic opportunities to the Supabase feed without editing the website code.</p>
+              <div id="opportunitySaved" class="mt-5 hidden rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-bold text-emerald-800">Opportunity saved.</div>
+            </div>
+            <form id="opportunityForm" class="grid gap-4">
+              <div class="grid gap-4 sm:grid-cols-2">
+                <label class="grid gap-2 text-sm font-bold text-slate-700">
+                  Opportunity title
+                  <input id="opportunityTitle" type="text" required placeholder="IT modernization support" class="h-12 rounded-xl border border-slate-200 px-4 outline-none transition focus:border-plum-500 focus:ring-4 focus:ring-plum-100" />
+                </label>
+                <label class="grid gap-2 text-sm font-bold text-slate-700">
+                  Agency
+                  <input id="opportunityAgency" type="text" required placeholder="Agency or department" class="h-12 rounded-xl border border-slate-200 px-4 outline-none transition focus:border-plum-500 focus:ring-4 focus:ring-plum-100" />
+                </label>
+              </div>
+              <div class="grid gap-4 sm:grid-cols-4">
+                <label class="grid gap-2 text-sm font-bold text-slate-700">
+                  State
+                  <input id="opportunityState" type="text" maxlength="2" required placeholder="VA" class="h-12 rounded-xl border border-slate-200 px-4 uppercase outline-none transition focus:border-plum-500 focus:ring-4 focus:ring-plum-100" />
+                </label>
+                <label class="grid gap-2 text-sm font-bold text-slate-700">
+                  NAICS
+                  <input id="opportunityNaics" type="text" required placeholder="541512" class="h-12 rounded-xl border border-slate-200 px-4 outline-none transition focus:border-plum-500 focus:ring-4 focus:ring-plum-100" />
+                </label>
+                <label class="grid gap-2 text-sm font-bold text-slate-700">
+                  Certification
+                  <select id="opportunityCertification" class="h-12 rounded-xl border border-slate-200 px-4 outline-none transition focus:border-plum-500 focus:ring-4 focus:ring-plum-100">
+                    <option>WOSB</option>
+                    <option>EDWOSB</option>
+                    <option>SWaM</option>
+                    <option>DBE</option>
+                    <option>MBE</option>
+                    <option>Small Business</option>
+                  </select>
+                </label>
+                <label class="grid gap-2 text-sm font-bold text-slate-700">
+                  Value
+                  <input id="opportunityValue" type="text" placeholder="$250K" class="h-12 rounded-xl border border-slate-200 px-4 outline-none transition focus:border-plum-500 focus:ring-4 focus:ring-plum-100" />
+                </label>
+              </div>
+              <div class="grid gap-4 sm:grid-cols-2">
+                <label class="grid gap-2 text-sm font-bold text-slate-700">
+                  Set-aside
+                  <input id="opportunitySetAside" type="text" required placeholder="Women-Owned Small Business" class="h-12 rounded-xl border border-slate-200 px-4 outline-none transition focus:border-plum-500 focus:ring-4 focus:ring-plum-100" />
+                </label>
+                <label class="grid gap-2 text-sm font-bold text-slate-700">
+                  Deadline
+                  <input id="opportunityDeadline" type="date" required class="h-12 rounded-xl border border-slate-200 px-4 outline-none transition focus:border-plum-500 focus:ring-4 focus:ring-plum-100" />
+                </label>
+              </div>
+              <label class="grid gap-2 text-sm font-bold text-slate-700">
+                Source link
+                <input id="opportunitySource" type="url" placeholder="https://sam.gov" class="h-12 rounded-xl border border-slate-200 px-4 outline-none transition focus:border-plum-500 focus:ring-4 focus:ring-plum-100" />
+              </label>
+              <label class="grid gap-2 text-sm font-bold text-slate-700">
+                Summary
+                <textarea id="opportunitySummary" required rows="4" placeholder="Briefly describe the work, buyer need, or bid focus..." class="rounded-xl border border-slate-200 px-4 py-3 outline-none transition focus:border-plum-500 focus:ring-4 focus:ring-plum-100"></textarea>
+              </label>
+              <button type="submit" class="rounded-xl bg-plum-700 px-5 py-3 text-sm font-extrabold text-white shadow-glow transition hover:-translate-y-0.5 hover:bg-plum-600">Add to opportunity feed</button>
+            </form>
+          </div>
+        </div>
+      </section>
+
       <section id="feedback" class="px-4 pb-10 sm:px-6 lg:px-8">
         <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-soft sm:p-6">
           <div class="grid gap-6 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
@@ -589,6 +660,18 @@
       accountState: document.getElementById("accountState"),
       accountNaics: document.getElementById("accountNaics"),
       profileSaved: document.getElementById("profileSaved"),
+      opportunityForm: document.getElementById("opportunityForm"),
+      opportunitySaved: document.getElementById("opportunitySaved"),
+      opportunityTitle: document.getElementById("opportunityTitle"),
+      opportunityAgency: document.getElementById("opportunityAgency"),
+      opportunityState: document.getElementById("opportunityState"),
+      opportunityNaics: document.getElementById("opportunityNaics"),
+      opportunityCertification: document.getElementById("opportunityCertification"),
+      opportunityValue: document.getElementById("opportunityValue"),
+      opportunitySetAside: document.getElementById("opportunitySetAside"),
+      opportunityDeadline: document.getElementById("opportunityDeadline"),
+      opportunitySource: document.getElementById("opportunitySource"),
+      opportunitySummary: document.getElementById("opportunitySummary"),
       resetFilters: document.getElementById("resetFilters"),
       openMenu: document.getElementById("openMenu"),
       closeMenu: document.getElementById("closeMenu"),
@@ -647,6 +730,59 @@
         tags: record.tags || [],
         summary: record.summary,
         link: record.source_url || "https://sam.gov"
+      };
+    }
+
+    function slugify(text) {
+      return text
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .slice(0, 48);
+    }
+
+    function formatDeadline(dateValue) {
+      if (!dateValue) return "TBD";
+      return new Intl.DateTimeFormat("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric"
+      }).format(new Date(`${dateValue}T12:00:00`));
+    }
+
+    function daysUntil(dateValue) {
+      if (!dateValue) return 0;
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const deadline = new Date(`${dateValue}T12:00:00`);
+      deadline.setHours(0, 0, 0, 0);
+      return Math.ceil((deadline - today) / 86400000);
+    }
+
+    function opportunityPayload() {
+      const deadlineDate = els.opportunityDeadline.value;
+      const title = els.opportunityTitle.value.trim();
+      const agency = els.opportunityAgency.value.trim();
+      const certification = els.opportunityCertification.value;
+      const state = els.opportunityState.value.trim().toUpperCase();
+      const daysLeft = daysUntil(deadlineDate);
+      const dueTag = daysLeft <= 14 ? "Due soon" : "Open";
+      return {
+        id: `${slugify(state || "bid")}-${slugify(title)}-${Date.now().toString().slice(-6)}`,
+        title,
+        agency,
+        state,
+        naics: els.opportunityNaics.value.trim(),
+        certification,
+        set_aside: els.opportunitySetAside.value.trim(),
+        deadline: formatDeadline(deadlineDate),
+        deadline_date: deadlineDate,
+        days_left: daysLeft,
+        estimated_value: els.opportunityValue.value.trim() || "TBD",
+        tags: [certification, state, dueTag],
+        summary: els.opportunitySummary.value.trim(),
+        source_url: els.opportunitySource.value.trim() || "https://sam.gov",
+        is_active: true
       };
     }
 
@@ -1075,6 +1211,25 @@
     els.accountForm.addEventListener("submit", async event => {
       event.preventDefault();
       await saveProfileSettings();
+    });
+
+    els.opportunityForm.addEventListener("submit", async event => {
+      event.preventDefault();
+      const payload = opportunityPayload();
+      const result = await window.HerBidSupabase.upsertOpportunity(payload);
+      if (!result.ok) {
+        els.opportunitySaved.textContent = "We could not save this opportunity yet. Confirm the Supabase policy was added and try again.";
+        els.opportunitySaved.className = "mt-5 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm font-bold text-rose-800";
+        els.opportunitySaved.classList.remove("hidden");
+        return;
+      }
+
+      els.opportunityForm.reset();
+      els.opportunitySaved.textContent = "Opportunity added to the Supabase feed.";
+      els.opportunitySaved.className = "mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-bold text-emerald-800";
+      els.opportunitySaved.classList.remove("hidden");
+      await loadOpportunities();
+      render();
     });
 
     document.addEventListener("click", event => {
