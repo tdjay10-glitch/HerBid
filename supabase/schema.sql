@@ -37,9 +37,17 @@ create table if not exists public.user_profiles (
   certification_type text,
   state text,
   naics_interests text,
+  alert_matches boolean not null default true,
+  alert_deadlines boolean not null default true,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table public.user_profiles
+add column if not exists alert_matches boolean not null default true;
+
+alter table public.user_profiles
+add column if not exists alert_deadlines boolean not null default true;
 
 create table if not exists public.saved_opportunities (
   id uuid primary key default gen_random_uuid(),

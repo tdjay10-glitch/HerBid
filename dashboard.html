@@ -163,7 +163,7 @@
           <a href="#alerts" class="rounded-xl px-4 py-3 transition hover:bg-slate-50 hover:text-plum-700">Email alerts</a>
           <a href="readiness.html" class="rounded-xl px-4 py-3 transition hover:bg-slate-50 hover:text-plum-700">Readiness Score</a>
           <a href="#feedback" class="rounded-xl px-4 py-3 transition hover:bg-slate-50 hover:text-plum-700">Beta feedback</a>
-          <a href="settings.html" class="rounded-xl px-4 py-3 transition hover:bg-slate-50 hover:text-plum-700">Settings</a>
+          <a href="#account-settings" class="rounded-xl px-4 py-3 transition hover:bg-slate-50 hover:text-plum-700">Account settings</a>
         </nav>
         <div class="m-4 rounded-2xl border border-plum-100 bg-plum-50 p-4">
           <p class="text-sm font-extrabold">Founder plan</p>
@@ -188,6 +188,7 @@
           <a href="#alerts" class="rounded-xl px-4 py-3 hover:bg-slate-50">Email alerts</a>
           <a href="readiness.html" class="rounded-xl px-4 py-3 hover:bg-slate-50">Readiness Score</a>
           <a href="#feedback" class="rounded-xl px-4 py-3 hover:bg-slate-50">Beta feedback</a>
+          <a href="#account-settings" class="rounded-xl px-4 py-3 hover:bg-slate-50">Account settings</a>
           <button id="mobileLogout" class="rounded-xl px-4 py-3 text-left text-rose-700 hover:bg-rose-50">Sign out</button>
         </nav>
       </div>
@@ -218,6 +219,31 @@
               <a href="#alerts" class="rounded-2xl bg-slate-50 px-4 py-3 text-sm font-extrabold text-slate-700 transition hover:bg-slate-100">3. Turn on alerts</a>
             </div>
           </div>
+        </div>
+        <div class="mb-5 grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
+          <article class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+            <p class="text-xs font-extrabold uppercase tracking-[0.2em] text-harvest-500">Beta tester path</p>
+            <h2 class="mt-2 text-2xl font-extrabold tracking-tight">Test the full saved-bid workflow.</h2>
+            <div class="mt-4 grid gap-3 sm:grid-cols-3">
+              <div class="rounded-2xl bg-slate-50 p-4">
+                <p class="text-sm font-extrabold text-plum-700">1. Update profile</p>
+                <p class="mt-1 text-xs font-semibold leading-5 text-slate-600">Add certification, state, and NAICS so matching feels personal.</p>
+              </div>
+              <div class="rounded-2xl bg-slate-50 p-4">
+                <p class="text-sm font-extrabold text-plum-700">2. Save bids</p>
+                <p class="mt-1 text-xs font-semibold leading-5 text-slate-600">Save at least one opportunity and confirm it appears below.</p>
+              </div>
+              <div class="rounded-2xl bg-slate-50 p-4">
+                <p class="text-sm font-extrabold text-plum-700">3. Leave feedback</p>
+                <p class="mt-1 text-xs font-semibold leading-5 text-slate-600">Tell HerBid where the workflow felt unclear or useful.</p>
+              </div>
+            </div>
+          </article>
+          <article class="rounded-3xl border border-plum-100 bg-plum-50 p-5">
+            <p class="text-xs font-extrabold uppercase tracking-[0.2em] text-plum-700">Profile match logic</p>
+            <h2 class="mt-2 text-2xl font-extrabold tracking-tight">Best matches rise to the top.</h2>
+            <p id="profileMatchSummary" class="mt-3 text-sm font-semibold leading-6 text-slate-700">Complete your profile to personalize the opportunity feed.</p>
+          </article>
         </div>
         <div class="grid gap-4 md:grid-cols-4">
           <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -302,7 +328,7 @@
           <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-soft sm:p-6">
             <p class="text-xs font-extrabold uppercase tracking-[0.2em] text-harvest-500">Email alerts</p>
             <h2 class="mt-2 text-3xl font-extrabold tracking-tight">Get notified when matching bids appear</h2>
-            <p class="mt-3 max-w-2xl text-sm leading-6 text-slate-600">Email alerts are marked medium priority for MVP, so this screen stores alert preferences and makes the future production workflow clear.</p>
+            <p class="mt-3 max-w-2xl text-sm leading-6 text-slate-600">Store alert preferences on your account so HerBid can send matching-bid and deadline reminders as the beta expands.</p>
             <div class="mt-5 grid gap-3 sm:grid-cols-2">
               <label class="flex items-center justify-between rounded-2xl border border-slate-200 p-4">
                 <span class="font-bold">New matching opportunities</span>
@@ -313,6 +339,7 @@
                 <input id="alertDeadlines" type="checkbox" class="h-5 w-5 accent-purple-700" checked />
               </label>
             </div>
+            <p id="alertStatus" class="mt-4 text-sm font-bold text-slate-500">Alert preferences are saved to your profile.</p>
           </div>
           <aside class="rounded-3xl border border-plum-100 bg-plum-50 p-5">
             <p class="text-sm font-extrabold text-plum-900">What is intentionally later?</p>
@@ -324,6 +351,47 @@
             </ul>
             <a href="readiness.html" class="mt-5 inline-flex w-full justify-center rounded-xl bg-plum-700 px-4 py-3 text-sm font-extrabold text-white transition hover:bg-plum-600">Check readiness score</a>
           </aside>
+        </div>
+      </section>
+
+      <section id="account-settings" class="px-4 pb-10 sm:px-6 lg:px-8">
+        <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-soft sm:p-6">
+          <div class="grid gap-6 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
+            <div>
+              <p class="text-xs font-extrabold uppercase tracking-[0.2em] text-plum-700">Account settings</p>
+              <h2 class="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Keep your matching profile current.</h2>
+              <p class="mt-3 text-sm leading-6 text-slate-600">HerBid uses this profile to bring stronger opportunities forward and keep saved bids tied to the right account.</p>
+              <div id="profileSaved" class="mt-5 hidden rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-bold text-emerald-800">Profile saved.</div>
+            </div>
+            <form id="accountForm" class="grid gap-4">
+              <label class="grid gap-2 text-sm font-bold text-slate-700">
+                Business name
+                <input id="accountBusinessName" type="text" class="h-12 rounded-xl border border-slate-200 px-4 outline-none transition focus:border-plum-500 focus:ring-4 focus:ring-plum-100" />
+              </label>
+              <div class="grid gap-4 sm:grid-cols-2">
+                <label class="grid gap-2 text-sm font-bold text-slate-700">
+                  Certification
+                  <select id="accountCertification" class="h-12 rounded-xl border border-slate-200 px-4 outline-none transition focus:border-plum-500 focus:ring-4 focus:ring-plum-100">
+                    <option>WOSB</option>
+                    <option>EDWOSB</option>
+                    <option>SWaM</option>
+                    <option>DBE</option>
+                    <option>MBE</option>
+                    <option>Not sure yet</option>
+                  </select>
+                </label>
+                <label class="grid gap-2 text-sm font-bold text-slate-700">
+                  State
+                  <input id="accountState" type="text" maxlength="2" placeholder="VA" class="h-12 rounded-xl border border-slate-200 px-4 uppercase outline-none transition focus:border-plum-500 focus:ring-4 focus:ring-plum-100" />
+                </label>
+              </div>
+              <label class="grid gap-2 text-sm font-bold text-slate-700">
+                NAICS interests
+                <input id="accountNaics" type="text" placeholder="541512, 541611, 518210" class="h-12 rounded-xl border border-slate-200 px-4 outline-none transition focus:border-plum-500 focus:ring-4 focus:ring-plum-100" />
+              </label>
+              <button type="submit" class="rounded-xl bg-plum-700 px-5 py-3 text-sm font-extrabold text-white shadow-glow transition hover:-translate-y-0.5 hover:bg-plum-600">Save profile</button>
+            </form>
+          </div>
         </div>
       </section>
 
@@ -500,6 +568,7 @@
       feed: document.getElementById("feed"),
       savedList: document.getElementById("savedList"),
       savedStatus: document.getElementById("savedStatus"),
+      profileMatchSummary: document.getElementById("profileMatchSummary"),
       emptyState: document.getElementById("emptyState"),
       statMatched: document.getElementById("statMatched"),
       statSaved: document.getElementById("statSaved"),
@@ -509,6 +578,13 @@
       navSavedCount: document.getElementById("navSavedCount"),
       alertMatches: document.getElementById("alertMatches"),
       alertDeadlines: document.getElementById("alertDeadlines"),
+      alertStatus: document.getElementById("alertStatus"),
+      accountForm: document.getElementById("accountForm"),
+      accountBusinessName: document.getElementById("accountBusinessName"),
+      accountCertification: document.getElementById("accountCertification"),
+      accountState: document.getElementById("accountState"),
+      accountNaics: document.getElementById("accountNaics"),
+      profileSaved: document.getElementById("profileSaved"),
       resetFilters: document.getElementById("resetFilters"),
       openMenu: document.getElementById("openMenu"),
       closeMenu: document.getElementById("closeMenu"),
@@ -524,6 +600,7 @@
     };
 
     let saved = [];
+    let savedRecords = [];
     let activeSetAside = "All";
     let authMode = "signin";
     let currentProfile = null;
@@ -584,8 +661,73 @@
         business_name: els.businessNameInput.value.trim(),
         certification_type: els.profileCertificationInput.value,
         state: els.profileStateInput.value.trim().toUpperCase(),
-        naics_interests: els.profileNaicsInput.value.trim()
+        naics_interests: els.profileNaicsInput.value.trim(),
+        alert_matches: true,
+        alert_deadlines: true
       };
+    }
+
+    function accountPayload() {
+      return {
+        business_name: els.accountBusinessName.value.trim(),
+        certification_type: els.accountCertification.value,
+        state: els.accountState.value.trim().toUpperCase(),
+        naics_interests: els.accountNaics.value.trim(),
+        alert_matches: els.alertMatches.checked,
+        alert_deadlines: els.alertDeadlines.checked
+      };
+    }
+
+    function profileNaicsValues() {
+      return (currentProfile?.naics_interests || "")
+        .split(",")
+        .map(value => value.trim())
+        .filter(Boolean);
+    }
+
+    function profileMatchScore(item) {
+      if (!currentProfile) return 0;
+      let score = 0;
+      const naics = profileNaicsValues();
+      if (naics.includes(item.naics)) score += 3;
+      if (currentProfile.state && currentProfile.state.toUpperCase() === item.state) score += 2;
+      if (currentProfile.certification_type && currentProfile.certification_type === item.certification) score += 2;
+      if (currentProfile.certification_type && item.setAside.toLowerCase().includes(currentProfile.certification_type.toLowerCase())) score += 1;
+      return score;
+    }
+
+    function matchLabel(item) {
+      const score = profileMatchScore(item);
+      if (score >= 5) return "Best match";
+      if (score >= 3) return "Strong match";
+      if (score > 0) return "Profile match";
+      return "";
+    }
+
+    function updateProfileSummary() {
+      if (!currentProfile) {
+        els.profileMatchSummary.textContent = "Complete your profile to personalize the opportunity feed.";
+        return;
+      }
+
+      const details = [
+        currentProfile.certification_type,
+        currentProfile.state,
+        currentProfile.naics_interests
+      ].filter(Boolean);
+      els.profileMatchSummary.textContent = details.length
+        ? `Matching by ${details.join(" • ")}.`
+        : "Add certification, state, and NAICS to personalize matches.";
+    }
+
+    function hydrateAccountForm() {
+      els.accountBusinessName.value = currentProfile?.business_name || "";
+      els.accountCertification.value = currentProfile?.certification_type || "WOSB";
+      els.accountState.value = currentProfile?.state || "";
+      els.accountNaics.value = currentProfile?.naics_interests || "";
+      els.alertMatches.checked = currentProfile?.alert_matches !== false;
+      els.alertDeadlines.checked = currentProfile?.alert_deadlines !== false;
+      updateProfileSummary();
     }
 
     async function syncPendingProfile(email) {
@@ -602,7 +744,9 @@
       currentProfile = profileResult.ok ? profileResult.data?.[0] || null : null;
 
       const savedResult = await window.HerBidSupabase.listSavedOpportunities();
-      saved = savedResult.ok ? savedResult.data.map(item => item.opportunity_id) : [];
+      savedRecords = savedResult.ok ? savedResult.data : [];
+      saved = savedRecords.map(item => item.opportunity_id);
+      hydrateAccountForm();
     }
 
     async function showDashboard(email) {
@@ -639,11 +783,13 @@
 
     function opportunityCard(item) {
       const isSaved = saved.includes(item.id);
+      const label = matchLabel(item);
       return `
         <article class="group rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-plum-200 hover:shadow-soft sm:p-5">
           <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div class="min-w-0">
               <div class="flex flex-wrap items-center gap-2">
+                ${label ? `<span class="rounded-full bg-harvest-100 px-2.5 py-1 text-xs font-extrabold text-amber-800">${label}</span>` : ""}
                 ${item.tags.map(makeTag).join("")}
                 <span class="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-extrabold text-slate-600">${item.state}</span>
               </div>
@@ -680,15 +826,41 @@
     }
 
     function renderSaved() {
-      const savedItems = opportunities.filter(item => saved.includes(item.id));
+      const savedItems = savedRecords.map(record => {
+        const opportunity = opportunities.find(item => item.id === record.opportunity_id);
+        return opportunity || {
+          id: record.opportunity_id,
+          title: record.title,
+          agency: record.agency,
+          deadline: record.deadline,
+          naics: record.naics,
+          setAside: record.set_aside,
+          link: record.source_url,
+          state: "",
+          certification: "",
+          tags: [record.set_aside],
+          summary: "Saved from your HerBid opportunity feed.",
+          value: "Saved"
+        };
+      });
       els.savedList.innerHTML = savedItems.length
         ? savedItems.map(item => `
-            <div class="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p class="font-extrabold">${item.title}</p>
-                <p class="mt-1 text-sm font-semibold text-slate-500">${item.agency} • ${item.deadline}</p>
+            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:border-plum-200 hover:bg-white">
+              <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                <div>
+                  <div class="flex flex-wrap gap-2">
+                    <span class="rounded-full bg-white px-2.5 py-1 text-xs font-extrabold text-plum-700">NAICS ${item.naics}</span>
+                    <span class="rounded-full bg-white px-2.5 py-1 text-xs font-extrabold text-amber-700">${item.setAside}</span>
+                  </div>
+                  <p class="mt-3 text-lg font-extrabold">${item.title}</p>
+                  <p class="mt-1 text-sm font-semibold text-slate-500">${item.agency}</p>
+                  <p class="mt-3 text-sm font-bold text-slate-700">Deadline: ${item.deadline}</p>
+                </div>
+                <div class="flex shrink-0 gap-2">
+                  <a href="${item.link}" target="_blank" rel="noreferrer" class="rounded-xl bg-plum-700 px-4 py-2 text-sm font-extrabold text-white transition hover:bg-plum-600">Open source</a>
+                  <button data-save="${item.id}" class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-extrabold text-slate-600 transition hover:border-rose-200 hover:text-rose-700">Remove</button>
+                </div>
               </div>
-              <button data-save="${item.id}" class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-extrabold text-slate-600 transition hover:border-rose-200 hover:text-rose-700">Remove</button>
             </div>
           `).join("")
         : `<div class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center">
@@ -699,7 +871,9 @@
 
     function render() {
       renderSetAsideFilters();
-      const filtered = opportunities.filter(matchesFilters);
+      const filtered = opportunities
+        .filter(matchesFilters)
+        .sort((a, b) => profileMatchScore(b) - profileMatchScore(a));
       els.feed.innerHTML = filtered.map(opportunityCard).join("");
       els.emptyState.classList.toggle("hidden", filtered.length > 0);
       renderSaved();
@@ -709,10 +883,6 @@
       els.navMatchCount.textContent = filtered.length;
       els.navSavedCount.textContent = saved.length;
       els.statAlerts.textContent = els.alertMatches.checked || els.alertDeadlines.checked ? "On" : "Off";
-      localStorage.setItem("herbidAlertPrefs", JSON.stringify({
-        matches: els.alertMatches.checked,
-        deadlines: els.alertDeadlines.checked
-      }));
     }
 
     async function toggleSave(id) {
@@ -721,6 +891,17 @@
 
       const wasSaved = saved.includes(id);
       saved = wasSaved ? saved.filter(item => item !== id) : [...saved, id];
+      savedRecords = wasSaved
+        ? savedRecords.filter(item => item.opportunity_id !== id)
+        : [{
+            opportunity_id: opportunity.id,
+            title: opportunity.title,
+            agency: opportunity.agency,
+            deadline: opportunity.deadline,
+            naics: opportunity.naics,
+            set_aside: opportunity.setAside,
+            source_url: opportunity.link
+          }, ...savedRecords];
       render();
 
       const result = wasSaved
@@ -729,6 +910,17 @@
 
       if (!result.ok) {
         saved = wasSaved ? [...saved, id] : saved.filter(item => item !== id);
+        savedRecords = wasSaved
+          ? [{
+              opportunity_id: opportunity.id,
+              title: opportunity.title,
+              agency: opportunity.agency,
+              deadline: opportunity.deadline,
+              naics: opportunity.naics,
+              set_aside: opportunity.setAside,
+              source_url: opportunity.link
+            }, ...savedRecords]
+          : savedRecords.filter(item => item.opportunity_id !== id);
         render();
         els.savedStatus.textContent = "We could not update Supabase. Please sign in again and retry.";
         els.savedStatus.className = "text-sm font-bold text-rose-700";
@@ -743,10 +935,37 @@
     fillSelect(els.stateFilter, uniqueValues("state"));
     fillSelect(els.certFilter, uniqueValues("certification"));
 
-    const alertPrefs = JSON.parse(localStorage.getItem("herbidAlertPrefs") || "null");
-    if (alertPrefs) {
-      els.alertMatches.checked = Boolean(alertPrefs.matches);
-      els.alertDeadlines.checked = Boolean(alertPrefs.deadlines);
+    async function saveProfileSettings(message = "Profile saved.") {
+      const payload = accountPayload();
+      const result = await window.HerBidSupabase.upsertProfile(payload);
+      if (!result.ok) {
+        els.profileSaved.textContent = "We could not save this yet. Please sign in again and retry.";
+        els.profileSaved.className = "mt-5 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm font-bold text-rose-800";
+        els.profileSaved.classList.remove("hidden");
+        return false;
+      }
+
+      currentProfile = {
+        ...(currentProfile || {}),
+        ...payload
+      };
+      setUser(currentProfile.email || window.HerBidSupabase.getSession()?.user?.email || "Founder");
+      hydrateAccountForm();
+      render();
+      els.profileSaved.textContent = message;
+      els.profileSaved.className = "mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-bold text-emerald-800";
+      els.profileSaved.classList.remove("hidden");
+      return true;
+    }
+
+    async function saveAlertPreferences() {
+      const result = await saveProfileSettings("Alert preferences saved.");
+      els.alertStatus.textContent = result
+        ? "Alert preferences saved to your profile."
+        : "We could not save alert preferences yet.";
+      els.alertStatus.className = result
+        ? "mt-4 text-sm font-bold text-emerald-700"
+        : "mt-4 text-sm font-bold text-rose-700";
     }
 
     els.signInMode.addEventListener("click", () => setAuthMode("signin"));
@@ -795,9 +1014,18 @@
       showAuthMessage("Account created. Check your email to confirm, then sign in here.", "success");
     });
 
-    [els.searchInput, els.naicsFilter, els.stateFilter, els.certFilter, els.alertMatches, els.alertDeadlines].forEach(input => {
+    [els.searchInput, els.naicsFilter, els.stateFilter, els.certFilter].forEach(input => {
       input.addEventListener("input", render);
       input.addEventListener("change", render);
+    });
+
+    [els.alertMatches, els.alertDeadlines].forEach(input => {
+      input.addEventListener("change", saveAlertPreferences);
+    });
+
+    els.accountForm.addEventListener("submit", async event => {
+      event.preventDefault();
+      await saveProfileSettings();
     });
 
     document.addEventListener("click", event => {
