@@ -406,8 +406,10 @@
               <h2 class="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Add a beta opportunity.</h2>
               <p class="mt-3 text-sm leading-6 text-slate-600">Use this lightweight manager to add realistic opportunities to the Supabase feed without editing the website code.</p>
               <div id="opportunitySaved" class="mt-5 hidden rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-bold text-emerald-800">Opportunity saved.</div>
+              <div id="managedOpportunityList" class="mt-5 grid gap-3"></div>
             </div>
             <form id="opportunityForm" class="grid gap-4">
+              <input id="opportunityEditId" type="hidden" />
               <div class="grid gap-4 sm:grid-cols-2">
                 <label class="grid gap-2 text-sm font-bold text-slate-700">
                   Opportunity title
@@ -461,7 +463,10 @@
                 Summary
                 <textarea id="opportunitySummary" required rows="4" placeholder="Briefly describe the work, buyer need, or bid focus..." class="rounded-xl border border-slate-200 px-4 py-3 outline-none transition focus:border-plum-500 focus:ring-4 focus:ring-plum-100"></textarea>
               </label>
-              <button type="submit" class="rounded-xl bg-plum-700 px-5 py-3 text-sm font-extrabold text-white shadow-glow transition hover:-translate-y-0.5 hover:bg-plum-600">Add to opportunity feed</button>
+              <div class="flex flex-col gap-3 sm:flex-row">
+                <button id="opportunitySubmit" type="submit" class="rounded-xl bg-plum-700 px-5 py-3 text-sm font-extrabold text-white shadow-glow transition hover:-translate-y-0.5 hover:bg-plum-600">Add to opportunity feed</button>
+                <button id="opportunityCancelEdit" type="button" class="hidden rounded-xl border border-slate-200 px-5 py-3 text-sm font-extrabold text-slate-600 transition hover:border-plum-200 hover:text-plum-700">Cancel edit</button>
+              </div>
             </form>
           </div>
         </div>
@@ -662,6 +667,10 @@
       profileSaved: document.getElementById("profileSaved"),
       opportunityForm: document.getElementById("opportunityForm"),
       opportunitySaved: document.getElementById("opportunitySaved"),
+      managedOpportunityList: document.getElementById("managedOpportunityList"),
+      opportunityEditId: document.getElementById("opportunityEditId"),
+      opportunitySubmit: document.getElementById("opportunitySubmit"),
+      opportunityCancelEdit: document.getElementById("opportunityCancelEdit"),
       opportunityTitle: document.getElementById("opportunityTitle"),
       opportunityAgency: document.getElementById("opportunityAgency"),
       opportunityState: document.getElementById("opportunityState"),
@@ -725,11 +734,13 @@
         certification: record.certification,
         setAside: record.set_aside,
         deadline: record.deadline,
+        deadlineDate: record.deadline_date,
         daysLeft: Number(record.days_left || 0),
         value: record.estimated_value || "TBD",
         tags: record.tags || [],
         summary: record.summary,
-        link: record.source_url || "https://sam.gov"
+        link: record.source_url || "https://sam.gov",
+        isActive: record.is_active !== false
       };
     }
 
@@ -768,7 +779,7 @@
       const daysLeft = daysUntil(deadlineDate);
       const dueTag = daysLeft <= 14 ? "Due soon" : "Open";
       return {
-        id: `${slugify(state || "bid")}-${slugify(title)}-${Date.now().toString().slice(-6)}`,
+        id: els.opportunityEditId.value || `${slugify(state || "bid")}-${slugify(title)}-${Date.now().toString().slice(-6)}`,
         title,
         agency,
         state,
@@ -784,6 +795,45 @@
         source_url: els.opportunitySource.value.trim() || "https://sam.gov",
         is_active: true
       };
+    }
+
+    function resetOpportunityForm() {
+      els.opportunityForm.reset();
+      els.opportunityEditId.value = "";
+      els.opportunitySubmit.textContent = "Add to opportunity feed";
+      els.opportunityCancelEdit.classList.add("hidden");
+    }
+
+    function fillOpportunityForm(item) {
+      els.opportunityEditId.value = item.id;
+      els.opportunityTitle.value = item.title;
+      els.opportunityAgency.value = item.agency;
+      els.opportunityState.value = item.state;
+      els.opportunityNaics.value = item.naics;
+      els.opportunityCertification.value = item.certification;
+      els.opportunityValue.value = item.value === "TBD" ? "" : item.value;
+      els.opportunitySetAside.value = item.setAside;
+      els.opportunityDeadline.value = item.deadlineDate || "";
+      els.opportunitySource.value = item.link || "";
+      els.opportunitySummary.value = item.summary;
+      els.opportunitySubmit.textContent = "Update opportunity";
+      els.opportunityCancelEdit.classList.remove("hidden");
+      document.getElementById("manage-opportunities").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function renderManagedOpportunities() {
+      els.managedOpportunityList.innerHTML = opportunities.length
+        ? opportunities.slice(0, 6).map(item => `
+            <div class="rounded-2xl border border-slate-200 bg-white p-4">
+              <p class="font-extrabold text-slate-900">${item.title}</p>
+              <p class="mt-1 text-sm font-semibold text-slate-500">${item.agency} • ${item.deadline}</p>
+              <div class="mt-3 flex flex-wrap gap-2">
+                <button data-edit-opportunity="${item.id}" class="rounded-xl border border-slate-200 px-3 py-2 text-xs font-extrabold text-slate-700 transition hover:border-plum-200 hover:text-plum-700">Edit</button>
+                <button data-deactivate-opportunity="${item.id}" class="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-extrabold text-rose-700 transition hover:bg-rose-100">Deactivate</button>
+              </div>
+            </div>
+          `).join("")
+        : `<div class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4 text-sm font-bold text-slate-600">No active opportunities yet.</div>`;
     }
 
     async function loadOpportunities() {
@@ -1055,6 +1105,7 @@
 
     function render() {
       renderSetAsideFilters();
+      renderManagedOpportunities();
       const filtered = opportunities
         .filter(matchesFilters)
         .sort((a, b) => profileMatchScore(b) - profileMatchScore(a));
@@ -1113,6 +1164,28 @@
 
       els.savedStatus.textContent = wasSaved ? "Bid removed from your HerBid account" : "Bid saved to your HerBid account";
       els.savedStatus.className = "text-sm font-semibold text-emerald-700";
+    }
+
+    async function deactivateOpportunity(id) {
+      const opportunity = opportunities.find(item => item.id === id);
+      if (!opportunity) return;
+
+      const result = await window.HerBidSupabase.deactivateOpportunity(id);
+      if (!result.ok) {
+        els.opportunitySaved.textContent = "We could not deactivate this opportunity yet. Confirm the Supabase policy was added and try again.";
+        els.opportunitySaved.className = "mt-5 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm font-bold text-rose-800";
+        els.opportunitySaved.classList.remove("hidden");
+        return;
+      }
+
+      opportunities = opportunities.filter(item => item.id !== id);
+      saved = saved.filter(item => item !== id);
+      savedRecords = savedRecords.filter(item => item.opportunity_id !== id);
+      els.opportunitySaved.textContent = `${opportunity.title} was deactivated.`;
+      els.opportunitySaved.className = "mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-bold text-emerald-800";
+      els.opportunitySaved.classList.remove("hidden");
+      resetOpportunityForm();
+      render();
     }
 
     els.naicsFilter.dataset.defaultOption = "All NAICS";
@@ -1216,6 +1289,7 @@
     els.opportunityForm.addEventListener("submit", async event => {
       event.preventDefault();
       const payload = opportunityPayload();
+      const isEditing = Boolean(els.opportunityEditId.value);
       const result = await window.HerBidSupabase.upsertOpportunity(payload);
       if (!result.ok) {
         els.opportunitySaved.textContent = "We could not save this opportunity yet. Confirm the Supabase policy was added and try again.";
@@ -1224,22 +1298,33 @@
         return;
       }
 
-      els.opportunityForm.reset();
-      els.opportunitySaved.textContent = "Opportunity added to the Supabase feed.";
+      resetOpportunityForm();
+      els.opportunitySaved.textContent = isEditing
+        ? "Opportunity updated in the Supabase feed."
+        : "Opportunity added to the Supabase feed.";
       els.opportunitySaved.className = "mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-bold text-emerald-800";
       els.opportunitySaved.classList.remove("hidden");
       await loadOpportunities();
       render();
     });
 
+    els.opportunityCancelEdit.addEventListener("click", resetOpportunityForm);
+
     document.addEventListener("click", event => {
       const saveButton = event.target.closest("[data-save]");
       const setAsideButton = event.target.closest("[data-setaside]");
+      const editOpportunityButton = event.target.closest("[data-edit-opportunity]");
+      const deactivateOpportunityButton = event.target.closest("[data-deactivate-opportunity]");
       if (saveButton) toggleSave(saveButton.dataset.save);
       if (setAsideButton) {
         activeSetAside = setAsideButton.dataset.setaside;
         render();
       }
+      if (editOpportunityButton) {
+        const opportunity = opportunities.find(item => item.id === editOpportunityButton.dataset.editOpportunity);
+        if (opportunity) fillOpportunityForm(opportunity);
+      }
+      if (deactivateOpportunityButton) deactivateOpportunity(deactivateOpportunityButton.dataset.deactivateOpportunity);
     });
 
     els.resetFilters.addEventListener("click", () => {

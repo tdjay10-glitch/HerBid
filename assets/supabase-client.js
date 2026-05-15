@@ -184,6 +184,17 @@
     });
   }
 
+  async function deactivateOpportunity(opportunityId) {
+    return request(`/rest/v1/opportunities?id=eq.${opportunityId}`, {
+      method: "PATCH",
+      headers: {
+        ...authHeaders(),
+        Prefer: "return=minimal"
+      },
+      body: JSON.stringify({ is_active: false })
+    });
+  }
+
   async function saveOpportunity(opportunity) {
     const session = getSession();
     if (!session?.user?.id) {
@@ -230,6 +241,7 @@
     getProfile,
     listOpportunities,
     upsertOpportunity,
+    deactivateOpportunity,
     listSavedOpportunities,
     saveOpportunity,
     removeSavedOpportunity
