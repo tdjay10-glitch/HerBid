@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HerBid Beta Tester Guide</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: "#171421",
+            plum: { 50: "#f7f1ff", 100: "#eadcff", 200: "#d4b7ff", 600: "#7c3aed", 700: "#6d28d9", 900: "#17183f" },
+            harvest: { 50: "#fff9eb", 100: "#fff1c7", 300: "#f4bd50", 500: "#f59e0b" }
+          },
+          boxShadow: {
+            soft: "0 18px 45px rgba(23, 20, 33, 0.08)",
+            glow: "0 24px 70px rgba(124, 58, 237, 0.18)"
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-white text-ink antialiased">
+  <header class="sticky top-0 z-30 border-b border-slate-200 bg-white/90 backdrop-blur">
+    <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+      <a href="index.html" class="flex items-center gap-3">
+        <img src="assets/herbid-logo.png" alt="HerBid" class="h-12 w-12 rounded-full object-cover ring-2 ring-harvest-300" />
+        <div>
+          <p class="text-lg font-extrabold">HerBid</p>
+          <p class="hidden text-xs font-bold uppercase tracking-wide text-slate-500 sm:block">Beta Tester Guide</p>
+        </div>
+      </a>
+      <nav class="flex items-center gap-4 text-sm font-bold text-slate-600">
+        <a href="dashboard.html" class="hidden transition hover:text-plum-700 sm:inline">Dashboard</a>
+        <a href="readiness.html" class="hidden transition hover:text-plum-700 sm:inline">Readiness Score</a>
+        <a href="dashboard.html" class="rounded-xl bg-plum-700 px-4 py-2.5 text-white shadow-glow transition hover:bg-plum-600">Start testing</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="bg-[linear-gradient(180deg,#ffffff_0%,#fbf7ff_62%,#ffffff_100%)] px-4 py-14 sm:px-6 lg:px-8">
+      <div class="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1fr_0.85fr] lg:items-center">
+        <div>
+          <div class="inline-flex rounded-full border border-plum-200 bg-white px-4 py-2 text-sm font-extrabold text-plum-700 shadow-sm">Private beta</div>
+          <h1 class="mt-6 max-w-4xl text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
+            Help HerBid become clearer for first-time government contractors.
+          </h1>
+          <p class="mt-6 max-w-2xl text-lg leading-8 text-slate-600">
+            Your goal is simple: sign in, review opportunities, save bids, use Nia, and tell us where the workflow feels unclear.
+          </p>
+          <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+            <a href="dashboard.html" class="inline-flex justify-center rounded-xl bg-plum-700 px-6 py-3.5 text-sm font-extrabold text-white shadow-glow transition hover:-translate-y-0.5 hover:bg-plum-600">Open beta dashboard</a>
+            <a href="#checklist" class="inline-flex justify-center rounded-xl border border-slate-200 px-6 py-3.5 text-sm font-extrabold text-slate-700 transition hover:border-plum-200 hover:text-plum-700">View checklist</a>
+          </div>
+        </div>
+        <aside class="rounded-3xl border border-slate-200 bg-white p-5 shadow-soft">
+          <p class="text-xs font-extrabold uppercase tracking-[0.2em] text-harvest-500">What to test</p>
+          <div class="mt-5 grid gap-3">
+            <div class="rounded-2xl bg-plum-50 p-4">
+              <p class="font-extrabold text-plum-900">Can you understand the dashboard?</p>
+              <p class="mt-1 text-sm font-semibold leading-6 text-slate-600">Tell us where labels, filters, or next steps feel unclear.</p>
+            </div>
+            <div class="rounded-2xl bg-slate-50 p-4">
+              <p class="font-extrabold text-slate-900">Can you find and save useful opportunities?</p>
+              <p class="mt-1 text-sm font-semibold leading-6 text-slate-600">Save one strong fit and one maybe-later bid.</p>
+            </div>
+            <div class="rounded-2xl bg-harvest-50 p-4">
+              <p class="font-extrabold text-amber-900">Does Nia help?</p>
+              <p class="mt-1 text-sm font-semibold leading-6 text-slate-600">Ask about a certification, NAICS code, or what to do next.</p>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="checklist" class="px-4 py-12 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-7xl">
+        <div class="max-w-3xl">
+          <p class="text-xs font-extrabold uppercase tracking-[0.2em] text-plum-700">Tester checklist</p>
+          <h2 class="mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">Complete these steps in one session.</h2>
+        </div>
+        <div class="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <p class="text-sm font-extrabold text-plum-700">1. Create or confirm account</p>
+            <p class="mt-2 text-sm font-semibold leading-6 text-slate-600">Sign in and confirm the dashboard opens without confusion.</p>
+          </article>
+          <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <p class="text-sm font-extrabold text-plum-700">2. Update profile</p>
+            <p class="mt-2 text-sm font-semibold leading-6 text-slate-600">Add business name, certification, state, and NAICS interests.</p>
+          </article>
+          <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <p class="text-sm font-extrabold text-plum-700">3. Filter opportunities</p>
+            <p class="mt-2 text-sm font-semibold leading-6 text-slate-600">Try search, NAICS, state, certification, and set-aside filters.</p>
+          </article>
+          <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <p class="text-sm font-extrabold text-plum-700">4. Save two bids</p>
+            <p class="mt-2 text-sm font-semibold leading-6 text-slate-600">Save one strong opportunity and one that might be useful later.</p>
+          </article>
+          <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <p class="text-sm font-extrabold text-plum-700">5. Ask Nia</p>
+            <p class="mt-2 text-sm font-semibold leading-6 text-slate-600">Ask about WOSB, SWaM, NAICS, readiness, or next steps.</p>
+          </article>
+          <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <p class="text-sm font-extrabold text-plum-700">6. Leave feedback</p>
+            <p class="mt-2 text-sm font-semibold leading-6 text-slate-600">Submit one clear note about what felt helpful or confusing.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-slate-50 px-4 py-12 sm:px-6 lg:px-8">
+      <div class="mx-auto grid max-w-7xl gap-6 lg:grid-cols-2">
+        <article class="rounded-3xl border border-slate-200 bg-white p-6 shadow-soft">
+          <p class="text-xs font-extrabold uppercase tracking-[0.2em] text-harvest-500">Feedback prompts</p>
+          <h2 class="mt-3 text-3xl font-extrabold tracking-tight">What we want to learn</h2>
+          <ul class="mt-5 space-y-3 text-sm font-semibold leading-6 text-slate-700">
+            <li>What part of finding opportunities felt easiest?</li>
+            <li>Where did you hesitate or feel unsure?</li>
+            <li>Were the certifications and NAICS filters understandable?</li>
+            <li>Did Nia answer in a useful, professional way?</li>
+            <li>What would make you trust HerBid more?</li>
+          </ul>
+        </article>
+        <article class="rounded-3xl border border-plum-100 bg-plum-50 p-6">
+          <p class="text-xs font-extrabold uppercase tracking-[0.2em] text-plum-700">Known limitations</p>
+          <h2 class="mt-3 text-3xl font-extrabold tracking-tight">What is not final yet</h2>
+          <ul class="mt-5 space-y-3 text-sm font-semibold leading-6 text-slate-700">
+            <li>Email alert delivery is not automated yet.</li>
+            <li>Nia is a lightweight guidance assistant, not a full AI model integration yet.</li>
+            <li>Opportunity examples may be curated for beta testing.</li>
+            <li>Payment-gated access is not enforced in this beta flow.</li>
+            <li>Official bid requirements should always be verified at the source link.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
