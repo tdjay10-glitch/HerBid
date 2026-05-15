@@ -173,6 +173,17 @@
     });
   }
 
+  async function upsertOpportunity(opportunity) {
+    return request("/rest/v1/opportunities?on_conflict=id", {
+      method: "POST",
+      headers: {
+        ...authHeaders(),
+        Prefer: "resolution=merge-duplicates,return=minimal"
+      },
+      body: JSON.stringify(opportunity)
+    });
+  }
+
   async function saveOpportunity(opportunity) {
     const session = getSession();
     if (!session?.user?.id) {
@@ -218,6 +229,7 @@
     upsertProfile,
     getProfile,
     listOpportunities,
+    upsertOpportunity,
     listSavedOpportunities,
     saveOpportunity,
     removeSavedOpportunity

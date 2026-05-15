@@ -61,6 +61,7 @@ The site now attempts to send:
 - Saved bid selections to `saved_opportunities`
 - Email alert preferences to the signed-in user's `user_profiles` row
 - Dashboard opportunity cards from `opportunities`
+- New beta opportunities added from the dashboard to `opportunities`
 
 If the `opportunities` table is empty or missing, the dashboard falls back to built-in beta opportunities so testers are not blocked.
 
