@@ -24,6 +24,11 @@ The schema creates:
 
 Row Level Security is enabled. Anonymous visitors can insert public capture rows, but no public read policy is created. Signed-in users can read and update only their own profile and saved opportunities.
 
+If `user_profiles` already exists, the schema also adds the latest beta columns:
+
+- `alert_matches`
+- `alert_deadlines`
+
 ## 3. Add the public project credentials
 
 Open:
@@ -53,6 +58,7 @@ The site now attempts to send:
 - Dashboard signup/login through Supabase Auth
 - User profile details to `user_profiles`
 - Saved bid selections to `saved_opportunities`
+- Email alert preferences to the signed-in user's `user_profiles` row
 
 If Supabase is not configured yet, the forms show a preview success message and save locally in the browser.
 

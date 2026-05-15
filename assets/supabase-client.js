@@ -160,7 +160,7 @@
   }
 
   async function listSavedOpportunities() {
-    return request("/rest/v1/saved_opportunities?select=opportunity_id&order=created_at.desc", {
+    return request("/rest/v1/saved_opportunities?select=*&order=created_at.desc", {
       method: "GET",
       headers: authHeaders()
     });
