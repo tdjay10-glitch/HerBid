@@ -21,6 +21,7 @@ The schema creates:
 - `readiness_results`
 - `user_profiles`
 - `saved_opportunities`
+- `opportunities`
 
 Row Level Security is enabled. Anonymous visitors can insert public capture rows, but no public read policy is created. Signed-in users can read and update only their own profile and saved opportunities.
 
@@ -59,6 +60,9 @@ The site now attempts to send:
 - User profile details to `user_profiles`
 - Saved bid selections to `saved_opportunities`
 - Email alert preferences to the signed-in user's `user_profiles` row
+- Dashboard opportunity cards from `opportunities`
+
+If the `opportunities` table is empty or missing, the dashboard falls back to built-in beta opportunities so testers are not blocked.
 
 If Supabase is not configured yet, the forms show a preview success message and save locally in the browser.
 
