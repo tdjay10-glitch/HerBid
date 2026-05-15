@@ -166,6 +166,13 @@
     });
   }
 
+  async function listOpportunities() {
+    return request("/rest/v1/opportunities?select=*&is_active=eq.true&order=deadline_date.asc", {
+      method: "GET",
+      headers: authHeaders()
+    });
+  }
+
   async function saveOpportunity(opportunity) {
     const session = getSession();
     if (!session?.user?.id) {
@@ -210,6 +217,7 @@
     signOut,
     upsertProfile,
     getProfile,
+    listOpportunities,
     listSavedOpportunities,
     saveOpportunity,
     removeSavedOpportunity

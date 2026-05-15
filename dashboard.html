@@ -272,6 +272,7 @@
               <p class="text-xs font-extrabold uppercase tracking-[0.2em] text-harvest-500">Opportunity feed</p>
               <h2 class="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Contracts that match your profile</h2>
               <p class="mt-2 max-w-2xl text-sm leading-6 text-slate-600">Search by keyword and filter by NAICS, state, certification type, and set-aside status.</p>
+              <p id="feedStatus" class="mt-2 text-sm font-bold text-slate-500">Loading live opportunity feed...</p>
             </div>
             <button id="resetFilters" class="rounded-xl border border-slate-200 px-4 py-3 text-sm font-extrabold text-slate-600 transition hover:border-plum-200 hover:text-plum-700">Reset filters</button>
           </div>
@@ -451,7 +452,7 @@
   </div>
 
   <script>
-    const opportunities = [
+    const fallbackOpportunities = [
       {
         id: "va-it-support",
         title: "IT Support and Managed Services",
@@ -544,6 +545,8 @@
       }
     ];
 
+    let opportunities = [...fallbackOpportunities];
+
     const els = {
       loginScreen: document.getElementById("loginScreen"),
       appShell: document.getElementById("appShell"),
@@ -564,6 +567,7 @@
       naicsFilter: document.getElementById("naicsFilter"),
       stateFilter: document.getElementById("stateFilter"),
       certFilter: document.getElementById("certFilter"),
+      feedStatus: document.getElementById("feedStatus"),
       setAsideFilters: document.getElementById("setAsideFilters"),
       feed: document.getElementById("feed"),
       savedList: document.getElementById("savedList"),
@@ -610,11 +614,54 @@
     }
 
     function fillSelect(select, values) {
+      const currentValue = select.value;
+      select.innerHTML = `<option>${select.dataset.defaultOption}</option>`;
       values.forEach(value => {
         const option = document.createElement("option");
         option.textContent = value;
         select.appendChild(option);
       });
+      if ([...select.options].some(option => option.value === currentValue)) {
+        select.value = currentValue;
+      }
+    }
+
+    function populateFilters() {
+      fillSelect(els.naicsFilter, uniqueValues("naics"));
+      fillSelect(els.stateFilter, uniqueValues("state"));
+      fillSelect(els.certFilter, uniqueValues("certification"));
+    }
+
+    function normalizeOpportunity(record) {
+      return {
+        id: record.id,
+        title: record.title,
+        agency: record.agency,
+        state: record.state,
+        naics: record.naics,
+        certification: record.certification,
+        setAside: record.set_aside,
+        deadline: record.deadline,
+        daysLeft: Number(record.days_left || 0),
+        value: record.estimated_value || "TBD",
+        tags: record.tags || [],
+        summary: record.summary,
+        link: record.source_url || "https://sam.gov"
+      };
+    }
+
+    async function loadOpportunities() {
+      const result = await window.HerBidSupabase.listOpportunities();
+      if (result.ok && result.data?.length) {
+        opportunities = result.data.map(normalizeOpportunity);
+        els.feedStatus.textContent = `${opportunities.length} live opportunities loaded from Supabase.`;
+        els.feedStatus.className = "mt-2 text-sm font-bold text-emerald-700";
+      } else {
+        opportunities = [...fallbackOpportunities];
+        els.feedStatus.textContent = "Showing built-in beta opportunities until the Supabase feed is populated.";
+        els.feedStatus.className = "mt-2 text-sm font-bold text-amber-700";
+      }
+      populateFilters();
     }
 
     function setUser(email) {
@@ -740,6 +787,7 @@
     }
 
     async function loadUserData() {
+      await loadOpportunities();
       const profileResult = await window.HerBidSupabase.getProfile();
       currentProfile = profileResult.ok ? profileResult.data?.[0] || null : null;
 
@@ -931,9 +979,10 @@
       els.savedStatus.className = "text-sm font-semibold text-emerald-700";
     }
 
-    fillSelect(els.naicsFilter, uniqueValues("naics"));
-    fillSelect(els.stateFilter, uniqueValues("state"));
-    fillSelect(els.certFilter, uniqueValues("certification"));
+    els.naicsFilter.dataset.defaultOption = "All NAICS";
+    els.stateFilter.dataset.defaultOption = "All States";
+    els.certFilter.dataset.defaultOption = "All Certifications";
+    populateFilters();
 
     async function saveProfileSettings(message = "Profile saved.") {
       const payload = accountPayload();
