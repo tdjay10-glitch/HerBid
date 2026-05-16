@@ -30,6 +30,25 @@
     }
   }
 
+  function setSessionFromUrlHash() {
+    const params = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+    const accessToken = params.get("access_token");
+    const refreshToken = params.get("refresh_token");
+    const type = params.get("type");
+    if (!accessToken) return null;
+
+    const session = {
+      access_token: accessToken,
+      refresh_token: refreshToken,
+      token_type: params.get("token_type") || "bearer",
+      expires_at: params.get("expires_at"),
+      expires_in: params.get("expires_in"),
+      type
+    };
+    setSession(session);
+    return session;
+  }
+
   async function request(path, options = {}) {
     if (!isConfigured()) {
       return { ok: false, reason: "Supabase is not configured yet." };
@@ -114,6 +133,24 @@
 
     if (result.ok) setSession(result.data);
     return result;
+  }
+
+  async function requestPasswordReset(email) {
+    return request("/auth/v1/recover", {
+      method: "POST",
+      body: JSON.stringify({
+        email,
+        redirect_to: `${window.location.origin}/dashboard.html`
+      })
+    });
+  }
+
+  async function updatePassword(password) {
+    return request("/auth/v1/user", {
+      method: "PUT",
+      headers: authHeaders(),
+      body: JSON.stringify({ password })
+    });
   }
 
   async function signOut() {
@@ -233,9 +270,12 @@
   window.HerBidSupabase = {
     isConfigured,
     getSession,
+    setSessionFromUrlHash,
     insert,
     signUp,
     signIn,
+    requestPasswordReset,
+    updatePassword,
     signOut,
     upsertProfile,
     getProfile,

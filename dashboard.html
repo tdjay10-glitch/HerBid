@@ -99,6 +99,9 @@
                 Password
                 <input id="passwordInput" type="password" required autocomplete="current-password" minlength="6" placeholder="Minimum 6 characters" class="h-12 rounded-xl border border-slate-200 px-4 font-medium outline-none transition focus:border-plum-500 focus:ring-4 focus:ring-plum-100" />
               </label>
+              <button id="forgotPassword" type="button" class="justify-self-start text-sm font-extrabold text-plum-700 transition hover:text-plum-900">
+                Forgot password?
+              </button>
               <div id="profileFields" class="hidden grid gap-4">
                 <label class="grid gap-2 text-sm font-bold text-slate-700">
                   Business name
@@ -130,6 +133,20 @@
                 Sign in to dashboard
               </button>
               <div id="authMessage" class="hidden rounded-xl border p-4 text-sm font-bold"></div>
+            </form>
+            <form id="resetPasswordForm" class="mt-6 hidden grid gap-4">
+              <label class="grid gap-2 text-sm font-bold text-slate-700">
+                New password
+                <input id="newPasswordInput" type="password" required autocomplete="new-password" minlength="6" placeholder="Minimum 6 characters" class="h-12 rounded-xl border border-slate-200 px-4 font-medium outline-none transition focus:border-plum-500 focus:ring-4 focus:ring-plum-100" />
+              </label>
+              <label class="grid gap-2 text-sm font-bold text-slate-700">
+                Confirm new password
+                <input id="confirmPasswordInput" type="password" required autocomplete="new-password" minlength="6" placeholder="Re-enter password" class="h-12 rounded-xl border border-slate-200 px-4 font-medium outline-none transition focus:border-plum-500 focus:ring-4 focus:ring-plum-100" />
+              </label>
+              <button class="inline-flex h-12 items-center justify-center rounded-xl bg-plum-700 px-5 text-sm font-extrabold text-white shadow-glow transition hover:-translate-y-0.5 hover:bg-plum-600" type="submit">
+                Save new password
+              </button>
+              <div id="resetMessage" class="hidden rounded-xl border p-4 text-sm font-bold"></div>
             </form>
             <div class="mt-5 rounded-xl border border-harvest-100 bg-harvest-50 p-4 text-sm leading-6 text-amber-900">
               Beta workspace: profile matching, saved bids, opportunity management, Nia guidance, and tester feedback.
@@ -669,12 +686,17 @@
       loginScreen: document.getElementById("loginScreen"),
       appShell: document.getElementById("appShell"),
       loginForm: document.getElementById("loginForm"),
+      resetPasswordForm: document.getElementById("resetPasswordForm"),
       emailInput: document.getElementById("emailInput"),
       passwordInput: document.getElementById("passwordInput"),
+      newPasswordInput: document.getElementById("newPasswordInput"),
+      confirmPasswordInput: document.getElementById("confirmPasswordInput"),
       signInMode: document.getElementById("signInMode"),
       signUpMode: document.getElementById("signUpMode"),
+      forgotPassword: document.getElementById("forgotPassword"),
       authSubmit: document.getElementById("authSubmit"),
       authMessage: document.getElementById("authMessage"),
+      resetMessage: document.getElementById("resetMessage"),
       profileFields: document.getElementById("profileFields"),
       businessNameInput: document.getElementById("businessNameInput"),
       profileCertificationInput: document.getElementById("profileCertificationInput"),
@@ -983,9 +1005,25 @@
       els.authMessage.className = `rounded-xl border p-4 text-sm font-bold ${styles[type]}`;
     }
 
+    function showResetMessage(message, type = "info") {
+      const styles = {
+        error: "border-rose-200 bg-rose-50 text-rose-800",
+        success: "border-emerald-200 bg-emerald-50 text-emerald-800",
+        info: "border-harvest-100 bg-harvest-50 text-amber-900"
+      };
+      els.resetMessage.textContent = message;
+      els.resetMessage.className = `rounded-xl border p-4 text-sm font-bold ${styles[type]}`;
+    }
+
     function hideAuthMessage() {
       els.authMessage.className = "hidden rounded-xl border p-4 text-sm font-bold";
       els.authMessage.textContent = "";
+    }
+
+    function showPasswordResetScreen() {
+      els.loginForm.classList.add("hidden");
+      els.resetPasswordForm.classList.remove("hidden");
+      showResetMessage("Enter a new password for your HerBid account.", "info");
     }
 
     function pendingProfileKey(email) {
@@ -1339,6 +1377,50 @@
     els.signInMode.addEventListener("click", () => setAuthMode("signin"));
     els.signUpMode.addEventListener("click", () => setAuthMode("signup"));
 
+    els.forgotPassword.addEventListener("click", async () => {
+      const email = els.emailInput.value.trim();
+      if (!email) {
+        showAuthMessage("Enter your email address first, then click Forgot password.", "info");
+        return;
+      }
+
+      els.forgotPassword.disabled = true;
+      els.forgotPassword.textContent = "Sending reset email...";
+      const result = await window.HerBidSupabase.requestPasswordReset(email);
+      els.forgotPassword.disabled = false;
+      els.forgotPassword.textContent = "Forgot password?";
+
+      showAuthMessage(
+        result.ok
+          ? "Password reset email sent. Open the email and follow the link back to HerBid."
+          : result.reason || "We could not send the reset email. Please try again.",
+        result.ok ? "success" : "error"
+      );
+    });
+
+    els.resetPasswordForm.addEventListener("submit", async event => {
+      event.preventDefault();
+      const password = els.newPasswordInput.value;
+      const confirmPassword = els.confirmPasswordInput.value;
+      if (password !== confirmPassword) {
+        showResetMessage("Passwords do not match. Please re-enter them.", "error");
+        return;
+      }
+
+      const result = await window.HerBidSupabase.updatePassword(password);
+      if (!result.ok) {
+        showResetMessage(result.reason || "We could not update the password. Please request a new reset link.", "error");
+        return;
+      }
+
+      showResetMessage("Password updated. You can now sign in with the new password.", "success");
+      els.resetPasswordForm.reset();
+      window.location.hash = "";
+      setAuthMode("signin");
+      els.resetPasswordForm.classList.add("hidden");
+      els.loginForm.classList.remove("hidden");
+    });
+
     els.loginForm.addEventListener("submit", async event => {
       event.preventDefault();
       const email = els.emailInput.value.trim();
@@ -1504,8 +1586,10 @@
     });
 
     setAuthMode("signin");
+    const recoverySession = window.HerBidSupabase.setSessionFromUrlHash();
+    if (recoverySession?.type === "recovery") showPasswordResetScreen();
     const storedSession = window.HerBidSupabase.getSession();
-    if (storedSession?.user?.email) showDashboard(storedSession.user.email);
+    if (!recoverySession && storedSession?.user?.email) showDashboard(storedSession.user.email);
   </script>
 </body>
 </html>
