@@ -524,9 +524,18 @@
               <p id="opsWaitlistCount" class="mt-2 text-3xl font-extrabold text-emerald-600">0</p>
             </article>
             <article class="rounded-2xl border border-slate-200 bg-slate-50 p-5">
-              <p class="text-sm font-bold text-slate-500">Your saved bids</p>
-              <p id="opsSavedCount" class="mt-2 text-3xl font-extrabold text-rose-600">0</p>
+              <p class="text-sm font-bold text-slate-500">Open issues</p>
+              <p id="opsOpenCount" class="mt-2 text-3xl font-extrabold text-rose-600">0</p>
             </article>
+          </div>
+          <div class="mt-5 rounded-2xl border border-plum-100 bg-plum-50 p-4">
+            <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+              <div>
+                <p class="text-sm font-extrabold text-plum-900">Founder review summary</p>
+                <div id="opsInsightList" class="mt-3 grid gap-2 text-sm font-bold text-plum-900"></div>
+              </div>
+              <button id="exportBetaFeedback" type="button" class="rounded-xl bg-white px-4 py-3 text-sm font-extrabold text-plum-700 shadow-sm transition hover:bg-plum-100">Export feedback CSV</button>
+            </div>
           </div>
           <div class="mt-5 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
             <div class="rounded-2xl border border-slate-200 bg-white p-4">
@@ -817,7 +826,9 @@
       opsFeedbackCount: document.getElementById("opsFeedbackCount"),
       opsReadinessAvg: document.getElementById("opsReadinessAvg"),
       opsWaitlistCount: document.getElementById("opsWaitlistCount"),
-      opsSavedCount: document.getElementById("opsSavedCount"),
+      opsOpenCount: document.getElementById("opsOpenCount"),
+      opsInsightList: document.getElementById("opsInsightList"),
+      exportBetaFeedback: document.getElementById("exportBetaFeedback"),
       opsFeedbackList: document.getElementById("opsFeedbackList"),
       opsReadinessList: document.getElementById("opsReadinessList"),
       opsWaitlistList: document.getElementById("opsWaitlistList"),
@@ -834,6 +845,7 @@
     let activeSetAside = "All";
     let authMode = "signin";
     let currentProfile = null;
+    let betaFeedbackItems = [];
     let niaStarted = false;
 
     const niaResponses = {
@@ -1048,16 +1060,62 @@
       return `<div class="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4 text-sm font-bold text-slate-600">${message}</div>`;
     }
 
+    function opsStatusClass(status = "New") {
+      if (status === "Reviewed") return "bg-emerald-100 text-emerald-800";
+      if (status === "In progress") return "bg-harvest-100 text-amber-800";
+      return "bg-white text-plum-700";
+    }
+
+    function opsPriorityClass(priority = "Medium") {
+      if (priority === "High") return "bg-rose-100 text-rose-800";
+      if (priority === "Low") return "bg-slate-100 text-slate-600";
+      return "bg-white text-slate-700";
+    }
+
+    function summarizeFeedback(items) {
+      if (!items.length) {
+        els.opsInsightList.innerHTML = emptyOpsState("No feedback patterns yet.");
+        return;
+      }
+
+      const counts = items.reduce((acc, item) => {
+        const key = item.feedback_type || "Other";
+        acc[key] = (acc[key] || 0) + 1;
+        return acc;
+      }, {});
+      const topPattern = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
+      const openCount = items.filter(item => (item.status || "New") !== "Reviewed").length;
+      const highCount = items.filter(item => (item.priority || "Medium") === "High").length;
+      const lowestRating = items.find(item => String(item.rating || "").startsWith("1") || String(item.rating || "").startsWith("2"));
+
+      els.opsInsightList.innerHTML = [
+        `${openCount} open tester note${openCount === 1 ? "" : "s"} need review.`,
+        `${highCount} high-priority issue${highCount === 1 ? "" : "s"} flagged.`,
+        topPattern ? `Most common pattern: ${escapeHtml(topPattern[0])} (${topPattern[1]}).` : "",
+        lowestRating ? `Lowest ease rating: ${escapeHtml(lowestRating.rating)} from ${escapeHtml(lowestRating.tester_name || "Anonymous tester")}.` : "No severe ease-of-use ratings yet."
+      ].filter(Boolean).map(item => `<p class="rounded-xl bg-white/80 px-3 py-2">${item}</p>`).join("");
+    }
+
     function renderOpsFeedback(items) {
+      summarizeFeedback(items);
       els.opsFeedbackList.innerHTML = items.length
         ? items.map(item => `
             <article class="rounded-xl border border-slate-200 bg-slate-50 p-4">
               <div class="flex flex-wrap items-center gap-2">
                 <span class="rounded-full bg-white px-2.5 py-1 text-xs font-extrabold text-plum-700">${escapeHtml(item.rating || "Unrated")}</span>
                 <span class="rounded-full bg-white px-2.5 py-1 text-xs font-extrabold text-slate-600">${escapeHtml(item.feedback_type || "Feedback")}</span>
+                <span class="rounded-full px-2.5 py-1 text-xs font-extrabold ${opsStatusClass(item.status)}">${escapeHtml(item.status || "New")}</span>
+                <span class="rounded-full px-2.5 py-1 text-xs font-extrabold ${opsPriorityClass(item.priority)}">${escapeHtml(item.priority || "Medium")} priority</span>
               </div>
               <p class="mt-3 text-sm font-bold text-slate-900">${escapeHtml(item.notes)}</p>
-              <p class="mt-2 text-xs font-semibold text-slate-500">${escapeHtml(item.tester_name || "Anonymous tester")} • ${formatDateTime(item.created_at)}</p>
+              <div class="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <p class="text-xs font-semibold text-slate-500">${escapeHtml(item.tester_name || "Anonymous tester")} • ${formatDateTime(item.created_at)}</p>
+                <div class="flex flex-wrap gap-2">
+                  <button data-feedback-status="${item.id}" data-status="In progress" class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-extrabold text-slate-700 transition hover:border-harvest-300 hover:text-amber-700">In progress</button>
+                  <button data-feedback-status="${item.id}" data-status="Reviewed" class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-extrabold text-slate-700 transition hover:border-emerald-300 hover:text-emerald-700">Reviewed</button>
+                  <button data-feedback-priority="${item.id}" data-priority="${item.priority === "High" ? "Medium" : "High"}" class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-extrabold text-slate-700 transition hover:border-rose-300 hover:text-rose-700">${item.priority === "High" ? "Set medium" : "High priority"}</button>
+                </div>
+              </div>
             </article>
           `).join("")
         : emptyOpsState("No tester feedback yet.");
@@ -1098,7 +1156,9 @@
         els.opsFeedbackCount.textContent = "0";
         els.opsReadinessAvg.textContent = "-";
         els.opsWaitlistCount.textContent = "0";
-        els.opsSavedCount.textContent = saved.length;
+        els.opsOpenCount.textContent = "0";
+        betaFeedbackItems = [];
+        summarizeFeedback([]);
         return;
       }
 
@@ -1117,19 +1177,50 @@
       const feedback = feedbackResult.data || [];
       const readiness = readinessResult.data || [];
       const waitlist = waitlistResult.data || [];
+      betaFeedbackItems = feedback;
       const readinessAverage = readiness.length
         ? Math.round(readiness.reduce((sum, item) => sum + Number(item.score || 0), 0) / readiness.length)
         : "-";
+      const openCount = feedback.filter(item => (item.status || "New") !== "Reviewed").length;
 
       els.betaOpsNotice.textContent = "Beta ops data loaded. Use repeated patterns here to decide what to fix next.";
       els.betaOpsNotice.className = "mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-bold leading-6 text-emerald-800";
       els.opsFeedbackCount.textContent = feedback.length;
       els.opsReadinessAvg.textContent = readinessAverage;
       els.opsWaitlistCount.textContent = waitlist.length;
-      els.opsSavedCount.textContent = saved.length;
+      els.opsOpenCount.textContent = openCount;
       renderOpsFeedback(feedback);
       renderOpsReadiness(readiness);
       renderOpsWaitlist(waitlist);
+    }
+
+    async function updateFeedbackReview(feedbackId, updates) {
+      const result = await window.HerBidSupabase.updateBetaFeedback(feedbackId, updates);
+      if (!result.ok) {
+        els.betaOpsNotice.textContent = "Could not update that feedback note yet. Confirm the beta feedback admin update policy was added in Supabase.";
+        els.betaOpsNotice.className = "mt-5 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm font-bold leading-6 text-rose-800";
+        return;
+      }
+
+      await loadBetaOps();
+    }
+
+    function exportBetaFeedbackCsv() {
+      if (!betaFeedbackItems.length) {
+        els.betaOpsNotice.textContent = "No beta feedback is available to export yet.";
+        els.betaOpsNotice.className = "mt-5 rounded-2xl border border-harvest-100 bg-harvest-50 p-4 text-sm font-bold leading-6 text-amber-900";
+        return;
+      }
+
+      const headers = ["created_at", "tester_name", "feedback_type", "rating", "status", "priority", "notes"];
+      const rows = betaFeedbackItems.map(item => headers.map(header => `"${String(item[header] || "").replaceAll('"', '""')}"`).join(","));
+      const csv = [headers.join(","), ...rows].join("\n");
+      const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `herbid-beta-feedback-${new Date().toISOString().slice(0, 10)}.csv`;
+      link.click();
+      URL.revokeObjectURL(url);
     }
 
     async function loadOpportunities() {
@@ -1437,7 +1528,6 @@
       els.statSoon.textContent = opportunities.filter(item => item.daysLeft <= 14).length;
       els.navMatchCount.textContent = filtered.length;
       els.navSavedCount.textContent = saved.length;
-      els.opsSavedCount.textContent = saved.length;
       els.statAlerts.textContent = els.alertMatches.checked || els.alertDeadlines.checked ? "On" : "Off";
     }
 
@@ -1675,6 +1765,7 @@
 
     els.opportunityCancelEdit.addEventListener("click", resetOpportunityForm);
     els.refreshBetaOps.addEventListener("click", loadBetaOps);
+    els.exportBetaFeedback.addEventListener("click", exportBetaFeedbackCsv);
     els.openNia.addEventListener("click", () => openNiaPanel());
     els.closeNia.addEventListener("click", closeNiaPanel);
     els.niaOverlay.addEventListener("click", event => {
@@ -1694,6 +1785,8 @@
       const setAsideButton = event.target.closest("[data-setaside]");
       const editOpportunityButton = event.target.closest("[data-edit-opportunity]");
       const deactivateOpportunityButton = event.target.closest("[data-deactivate-opportunity]");
+      const feedbackStatusButton = event.target.closest("[data-feedback-status]");
+      const feedbackPriorityButton = event.target.closest("[data-feedback-priority]");
       const niaPromptButton = event.target.closest("[data-nia-prompt]");
       const niaOpportunityButton = event.target.closest("[data-nia-opportunity]");
       if (saveButton) toggleSave(saveButton.dataset.save);
@@ -1706,6 +1799,8 @@
         if (opportunity) fillOpportunityForm(opportunity);
       }
       if (deactivateOpportunityButton) deactivateOpportunity(deactivateOpportunityButton.dataset.deactivateOpportunity);
+      if (feedbackStatusButton) updateFeedbackReview(feedbackStatusButton.dataset.feedbackStatus, { status: feedbackStatusButton.dataset.status });
+      if (feedbackPriorityButton) updateFeedbackReview(feedbackPriorityButton.dataset.feedbackPriority, { priority: feedbackPriorityButton.dataset.priority });
       if (niaPromptButton) openNiaPanel(niaPromptButton.dataset.niaPrompt);
       if (niaOpportunityButton) {
         const opportunity = opportunities.find(item => item.id === niaOpportunityButton.dataset.niaOpportunity);

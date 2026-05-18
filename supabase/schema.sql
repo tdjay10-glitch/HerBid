@@ -16,9 +16,17 @@ create table if not exists public.beta_feedback (
   feedback_type text not null,
   rating text not null,
   notes text not null,
+  status text not null default 'New',
+  priority text not null default 'Medium',
   page_path text,
   created_at timestamptz not null default now()
 );
+
+alter table public.beta_feedback
+add column if not exists status text not null default 'New';
+
+alter table public.beta_feedback
+add column if not exists priority text not null default 'Medium';
 
 create table if not exists public.readiness_results (
   id uuid primary key default gen_random_uuid(),
@@ -131,6 +139,20 @@ on public.beta_feedback
 for select
 to authenticated
 using (exists (
+  select 1 from public.user_profiles
+  where id = auth.uid() and is_admin = true
+));
+
+drop policy if exists "Admins can update beta feedback" on public.beta_feedback;
+create policy "Admins can update beta feedback"
+on public.beta_feedback
+for update
+to authenticated
+using (exists (
+  select 1 from public.user_profiles
+  where id = auth.uid() and is_admin = true
+))
+with check (exists (
   select 1 from public.user_profiles
   where id = auth.uid() and is_admin = true
 ));

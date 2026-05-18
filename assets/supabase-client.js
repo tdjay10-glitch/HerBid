@@ -203,6 +203,17 @@
     });
   }
 
+  async function updateBetaFeedback(feedbackId, updates) {
+    return request(`/rest/v1/beta_feedback?id=eq.${feedbackId}`, {
+      method: "PATCH",
+      headers: {
+        ...authHeaders(),
+        Prefer: "return=minimal"
+      },
+      body: JSON.stringify(updates)
+    });
+  }
+
   async function listReadinessResults() {
     return request("/rest/v1/readiness_results?select=*&order=created_at.desc&limit=25", {
       method: "GET",
@@ -301,6 +312,7 @@
     upsertProfile,
     getProfile,
     listBetaFeedback,
+    updateBetaFeedback,
     listReadinessResults,
     listWaitlistSubmissions,
     listOpportunities,
