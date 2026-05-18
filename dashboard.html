@@ -524,9 +524,24 @@
               <p id="opsWaitlistCount" class="mt-2 text-3xl font-extrabold text-emerald-600">0</p>
             </article>
             <article class="rounded-2xl border border-slate-200 bg-slate-50 p-5">
-              <p class="text-sm font-bold text-slate-500">Your saved bids</p>
-              <p id="opsSavedCount" class="mt-2 text-3xl font-extrabold text-rose-600">0</p>
+              <p class="text-sm font-bold text-slate-500">Open issues</p>
+              <p id="opsOpenCount" class="mt-2 text-3xl font-extrabold text-rose-600">0</p>
             </article>
+          </div>
+          <div class="mt-5 grid gap-4 lg:grid-cols-[1fr_0.9fr]">
+            <div class="rounded-2xl border border-plum-100 bg-plum-50 p-4">
+              <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <p class="text-sm font-extrabold text-plum-900">What to fix next</p>
+                  <div id="opsFixQueue" class="mt-3 grid gap-2 text-sm font-bold text-plum-900"></div>
+                </div>
+                <button id="exportBetaFeedback" type="button" class="rounded-xl bg-white px-4 py-3 text-sm font-extrabold text-plum-700 shadow-sm transition hover:bg-plum-100">Export feedback CSV</button>
+              </div>
+            </div>
+            <div class="rounded-2xl border border-slate-200 bg-white p-4">
+              <p class="text-sm font-extrabold text-slate-900">Founder review summary</p>
+              <div id="opsInsightList" class="mt-3 grid gap-2 text-sm font-bold text-slate-700"></div>
+            </div>
           </div>
           <div class="mt-5 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
             <div class="rounded-2xl border border-slate-200 bg-white p-4">
@@ -817,7 +832,10 @@
       opsFeedbackCount: document.getElementById("opsFeedbackCount"),
       opsReadinessAvg: document.getElementById("opsReadinessAvg"),
       opsWaitlistCount: document.getElementById("opsWaitlistCount"),
-      opsSavedCount: document.getElementById("opsSavedCount"),
+      opsOpenCount: document.getElementById("opsOpenCount"),
+      opsFixQueue: document.getElementById("opsFixQueue"),
+      opsInsightList: document.getElementById("opsInsightList"),
+      exportBetaFeedback: document.getElementById("exportBetaFeedback"),
       opsFeedbackList: document.getElementById("opsFeedbackList"),
       opsReadinessList: document.getElementById("opsReadinessList"),
       opsWaitlistList: document.getElementById("opsWaitlistList"),
@@ -834,6 +852,7 @@
     let activeSetAside = "All";
     let authMode = "signin";
     let currentProfile = null;
+    let betaFeedbackItems = [];
     let niaStarted = false;
 
     const niaResponses = {
@@ -1048,16 +1067,100 @@
       return `<div class="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4 text-sm font-bold text-slate-600">${message}</div>`;
     }
 
+    function opsStatusClass(status = "New") {
+      if (status === "Fixed") return "bg-emerald-100 text-emerald-800";
+      if (status === "Reviewed") return "bg-slate-100 text-slate-700";
+      if (status === "In progress") return "bg-harvest-100 text-amber-800";
+      return "bg-white text-plum-700";
+    }
+
+    function opsPriorityClass(priority = "Medium") {
+      if (priority === "High") return "bg-rose-100 text-rose-800";
+      if (priority === "Low") return "bg-slate-100 text-slate-600";
+      return "bg-white text-slate-700";
+    }
+
+    function summarizeFeedback(items) {
+      if (!items.length) {
+        els.opsInsightList.innerHTML = emptyOpsState("No feedback patterns yet.");
+        els.opsFixQueue.innerHTML = emptyOpsState("No open feedback yet.");
+        return;
+      }
+
+      const openItems = items.filter(item => !["Reviewed", "Fixed"].includes(item.status || "New"));
+      const highItems = items.filter(item => (item.priority || "Medium") === "High" && item.status !== "Fixed");
+      const areaCounts = items.reduce((acc, item) => {
+        const key = item.product_area || item.feedback_type || "Needs triage";
+        acc[key] = (acc[key] || 0) + 1;
+        return acc;
+      }, {});
+      const topArea = Object.entries(areaCounts).sort((a, b) => b[1] - a[1])[0];
+      const lowRating = items.find(item => String(item.rating || "").startsWith("1") || String(item.rating || "").startsWith("2"));
+      const queue = [...highItems, ...openItems.filter(item => !highItems.includes(item))]
+        .slice(0, 3);
+
+      els.opsInsightList.innerHTML = [
+        `${openItems.length} open tester issue${openItems.length === 1 ? "" : "s"} need review.`,
+        `${highItems.length} high-priority issue${highItems.length === 1 ? "" : "s"} are still active.`,
+        topArea ? `Most common area: ${escapeHtml(topArea[0])} (${topArea[1]}).` : "",
+        lowRating ? `Lowest ease rating: ${escapeHtml(lowRating.rating)} from ${escapeHtml(lowRating.tester_name || "Anonymous tester")}.` : "No severe ease-of-use ratings yet."
+      ].filter(Boolean).map(item => `<p class="rounded-xl bg-slate-50 px-3 py-2">${item}</p>`).join("");
+
+      els.opsFixQueue.innerHTML = queue.length
+        ? queue.map(item => `
+            <div class="rounded-xl bg-white/85 px-3 py-3">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="rounded-full px-2.5 py-1 text-xs font-extrabold ${opsPriorityClass(item.priority)}">${escapeHtml(item.priority || "Medium")}</span>
+                <span class="rounded-full px-2.5 py-1 text-xs font-extrabold ${opsStatusClass(item.status)}">${escapeHtml(item.status || "New")}</span>
+                <span class="rounded-full bg-plum-100 px-2.5 py-1 text-xs font-extrabold text-plum-800">${escapeHtml(item.product_area || "Needs triage")}</span>
+              </div>
+              <p class="mt-2 text-sm font-extrabold leading-5 text-plum-950">${escapeHtml(item.notes).slice(0, 150)}${String(item.notes || "").length > 150 ? "..." : ""}</p>
+            </div>
+          `).join("")
+        : emptyOpsState("No open feedback. Nice.");
+    }
+
     function renderOpsFeedback(items) {
+      summarizeFeedback(items);
       els.opsFeedbackList.innerHTML = items.length
         ? items.map(item => `
             <article class="rounded-xl border border-slate-200 bg-slate-50 p-4">
               <div class="flex flex-wrap items-center gap-2">
                 <span class="rounded-full bg-white px-2.5 py-1 text-xs font-extrabold text-plum-700">${escapeHtml(item.rating || "Unrated")}</span>
                 <span class="rounded-full bg-white px-2.5 py-1 text-xs font-extrabold text-slate-600">${escapeHtml(item.feedback_type || "Feedback")}</span>
+                <span class="rounded-full px-2.5 py-1 text-xs font-extrabold ${opsStatusClass(item.status)}">${escapeHtml(item.status || "New")}</span>
+                <span class="rounded-full px-2.5 py-1 text-xs font-extrabold ${opsPriorityClass(item.priority)}">${escapeHtml(item.priority || "Medium")} priority</span>
+                <span class="rounded-full bg-white px-2.5 py-1 text-xs font-extrabold text-slate-600">${escapeHtml(item.product_area || "Needs triage")}</span>
               </div>
               <p class="mt-3 text-sm font-bold text-slate-900">${escapeHtml(item.notes)}</p>
-              <p class="mt-2 text-xs font-semibold text-slate-500">${escapeHtml(item.tester_name || "Anonymous tester")} • ${formatDateTime(item.created_at)}</p>
+              ${item.internal_note ? `<p class="mt-3 rounded-xl border border-harvest-100 bg-harvest-50 p-3 text-xs font-bold leading-5 text-amber-900">Founder note: ${escapeHtml(item.internal_note)}</p>` : ""}
+              <div class="mt-3 grid gap-3">
+                <p class="text-xs font-semibold text-slate-500">${escapeHtml(item.tester_name || "Anonymous tester")} • ${formatDateTime(item.created_at)}</p>
+                <div class="grid gap-2 sm:grid-cols-[1fr_1fr_1.4fr]">
+                  <label class="grid gap-1 text-xs font-extrabold text-slate-600">
+                    Status
+                    <select data-feedback-status="${item.id}" class="h-10 rounded-lg border border-slate-200 bg-white px-3 text-xs font-bold outline-none focus:border-plum-500">
+                      ${["New", "In progress", "Reviewed", "Fixed"].map(value => `<option value="${value}" ${value === (item.status || "New") ? "selected" : ""}>${value}</option>`).join("")}
+                    </select>
+                  </label>
+                  <label class="grid gap-1 text-xs font-extrabold text-slate-600">
+                    Priority
+                    <select data-feedback-priority="${item.id}" class="h-10 rounded-lg border border-slate-200 bg-white px-3 text-xs font-bold outline-none focus:border-plum-500">
+                      ${["High", "Medium", "Low"].map(value => `<option value="${value}" ${value === (item.priority || "Medium") ? "selected" : ""}>${value}</option>`).join("")}
+                    </select>
+                  </label>
+                  <label class="grid gap-1 text-xs font-extrabold text-slate-600">
+                    Area
+                    <select data-feedback-area="${item.id}" class="h-10 rounded-lg border border-slate-200 bg-white px-3 text-xs font-bold outline-none focus:border-plum-500">
+                      ${["Needs triage", "Login", "Dashboard", "Nia", "Mobile", "Saved bids", "Opportunity feed", "Pricing", "Other"].map(value => `<option value="${value}" ${value === (item.product_area || "Needs triage") ? "selected" : ""}>${value}</option>`).join("")}
+                    </select>
+                  </label>
+                </div>
+                <div class="flex flex-col gap-2 sm:flex-row">
+                  <input data-feedback-note-input="${item.id}" value="${escapeHtml(item.internal_note || "")}" placeholder="Add private founder note..." class="min-w-0 flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold outline-none focus:border-plum-500" />
+                  <button data-feedback-note="${item.id}" type="button" class="rounded-lg bg-plum-700 px-3 py-2 text-xs font-extrabold text-white transition hover:bg-plum-600">Save note</button>
+                </div>
+              </div>
             </article>
           `).join("")
         : emptyOpsState("No tester feedback yet.");
@@ -1098,7 +1201,9 @@
         els.opsFeedbackCount.textContent = "0";
         els.opsReadinessAvg.textContent = "-";
         els.opsWaitlistCount.textContent = "0";
-        els.opsSavedCount.textContent = saved.length;
+        els.opsOpenCount.textContent = "0";
+        betaFeedbackItems = [];
+        summarizeFeedback([]);
         return;
       }
 
@@ -1117,19 +1222,50 @@
       const feedback = feedbackResult.data || [];
       const readiness = readinessResult.data || [];
       const waitlist = waitlistResult.data || [];
+      betaFeedbackItems = feedback;
       const readinessAverage = readiness.length
         ? Math.round(readiness.reduce((sum, item) => sum + Number(item.score || 0), 0) / readiness.length)
         : "-";
+      const openCount = feedback.filter(item => !["Reviewed", "Fixed"].includes(item.status || "New")).length;
 
       els.betaOpsNotice.textContent = "Beta ops data loaded. Use repeated patterns here to decide what to fix next.";
       els.betaOpsNotice.className = "mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-bold leading-6 text-emerald-800";
       els.opsFeedbackCount.textContent = feedback.length;
       els.opsReadinessAvg.textContent = readinessAverage;
       els.opsWaitlistCount.textContent = waitlist.length;
-      els.opsSavedCount.textContent = saved.length;
+      els.opsOpenCount.textContent = openCount;
       renderOpsFeedback(feedback);
       renderOpsReadiness(readiness);
       renderOpsWaitlist(waitlist);
+    }
+
+    async function updateFeedbackReview(feedbackId, updates) {
+      const result = await window.HerBidSupabase.updateBetaFeedback(feedbackId, updates);
+      if (!result.ok) {
+        els.betaOpsNotice.textContent = "Could not update that feedback note yet. Confirm the beta feedback admin update policy was added in Supabase.";
+        els.betaOpsNotice.className = "mt-5 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm font-bold leading-6 text-rose-800";
+        return;
+      }
+
+      await loadBetaOps();
+    }
+
+    function exportBetaFeedbackCsv() {
+      if (!betaFeedbackItems.length) {
+        els.betaOpsNotice.textContent = "No beta feedback is available to export yet.";
+        els.betaOpsNotice.className = "mt-5 rounded-2xl border border-harvest-100 bg-harvest-50 p-4 text-sm font-bold leading-6 text-amber-900";
+        return;
+      }
+
+      const headers = ["created_at", "tester_name", "feedback_type", "rating", "status", "priority", "product_area", "internal_note", "notes"];
+      const rows = betaFeedbackItems.map(item => headers.map(header => `"${String(item[header] || "").replaceAll('"', '""')}"`).join(","));
+      const csv = [headers.join(","), ...rows].join("\n");
+      const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `herbid-beta-feedback-${new Date().toISOString().slice(0, 10)}.csv`;
+      link.click();
+      URL.revokeObjectURL(url);
     }
 
     async function loadOpportunities() {
@@ -1437,7 +1573,6 @@
       els.statSoon.textContent = opportunities.filter(item => item.daysLeft <= 14).length;
       els.navMatchCount.textContent = filtered.length;
       els.navSavedCount.textContent = saved.length;
-      els.opsSavedCount.textContent = saved.length;
       els.statAlerts.textContent = els.alertMatches.checked || els.alertDeadlines.checked ? "On" : "Off";
     }
 
@@ -1675,6 +1810,7 @@
 
     els.opportunityCancelEdit.addEventListener("click", resetOpportunityForm);
     els.refreshBetaOps.addEventListener("click", loadBetaOps);
+    els.exportBetaFeedback.addEventListener("click", exportBetaFeedbackCsv);
     els.openNia.addEventListener("click", () => openNiaPanel());
     els.closeNia.addEventListener("click", closeNiaPanel);
     els.niaOverlay.addEventListener("click", event => {
@@ -1694,6 +1830,7 @@
       const setAsideButton = event.target.closest("[data-setaside]");
       const editOpportunityButton = event.target.closest("[data-edit-opportunity]");
       const deactivateOpportunityButton = event.target.closest("[data-deactivate-opportunity]");
+      const feedbackNoteButton = event.target.closest("[data-feedback-note]");
       const niaPromptButton = event.target.closest("[data-nia-prompt]");
       const niaOpportunityButton = event.target.closest("[data-nia-opportunity]");
       if (saveButton) toggleSave(saveButton.dataset.save);
@@ -1706,12 +1843,25 @@
         if (opportunity) fillOpportunityForm(opportunity);
       }
       if (deactivateOpportunityButton) deactivateOpportunity(deactivateOpportunityButton.dataset.deactivateOpportunity);
+      if (feedbackNoteButton) {
+        const input = document.querySelector(`[data-feedback-note-input="${feedbackNoteButton.dataset.feedbackNote}"]`);
+        updateFeedbackReview(feedbackNoteButton.dataset.feedbackNote, { internal_note: input?.value.trim() || "" });
+      }
       if (niaPromptButton) openNiaPanel(niaPromptButton.dataset.niaPrompt);
       if (niaOpportunityButton) {
         const opportunity = opportunities.find(item => item.id === niaOpportunityButton.dataset.niaOpportunity);
         openNiaPanel();
         if (opportunity) niaMessage(`${opportunity.title}: ${opportunity.summary} This is a ${opportunity.setAside} opportunity under NAICS ${opportunity.naics}, due ${opportunity.deadline}. Next step: verify eligibility in the source posting, then save it if it fits your business.`, "nia");
       }
+    });
+
+    document.addEventListener("change", event => {
+      const statusSelect = event.target.closest("[data-feedback-status]");
+      const prioritySelect = event.target.closest("[data-feedback-priority]");
+      const areaSelect = event.target.closest("[data-feedback-area]");
+      if (statusSelect) updateFeedbackReview(statusSelect.dataset.feedbackStatus, { status: statusSelect.value });
+      if (prioritySelect) updateFeedbackReview(prioritySelect.dataset.feedbackPriority, { priority: prioritySelect.value });
+      if (areaSelect) updateFeedbackReview(areaSelect.dataset.feedbackArea, { product_area: areaSelect.value });
     });
 
     els.resetFilters.addEventListener("click", () => {
