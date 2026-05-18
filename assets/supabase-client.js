@@ -196,6 +196,27 @@
     });
   }
 
+  async function listBetaFeedback() {
+    return request("/rest/v1/beta_feedback?select=*&order=created_at.desc&limit=25", {
+      method: "GET",
+      headers: authHeaders()
+    });
+  }
+
+  async function listReadinessResults() {
+    return request("/rest/v1/readiness_results?select=*&order=created_at.desc&limit=25", {
+      method: "GET",
+      headers: authHeaders()
+    });
+  }
+
+  async function listWaitlistSubmissions() {
+    return request("/rest/v1/waitlist_submissions?select=*&order=created_at.desc&limit=25", {
+      method: "GET",
+      headers: authHeaders()
+    });
+  }
+
   async function listSavedOpportunities() {
     return request("/rest/v1/saved_opportunities?select=*&order=created_at.desc", {
       method: "GET",
@@ -279,6 +300,9 @@
     signOut,
     upsertProfile,
     getProfile,
+    listBetaFeedback,
+    listReadinessResults,
+    listWaitlistSubmissions,
     listOpportunities,
     upsertOpportunity,
     deactivateOpportunity,

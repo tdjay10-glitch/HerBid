@@ -39,6 +39,7 @@ create table if not exists public.user_profiles (
   naics_interests text,
   alert_matches boolean not null default true,
   alert_deadlines boolean not null default true,
+  is_admin boolean not null default false,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -48,6 +49,9 @@ add column if not exists alert_matches boolean not null default true;
 
 alter table public.user_profiles
 add column if not exists alert_deadlines boolean not null default true;
+
+alter table public.user_profiles
+add column if not exists is_admin boolean not null default false;
 
 create table if not exists public.saved_opportunities (
   id uuid primary key default gen_random_uuid(),
@@ -110,6 +114,36 @@ on public.readiness_results
 for insert
 to anon
 with check (true);
+
+drop policy if exists "Admins can read waitlist submissions" on public.waitlist_submissions;
+create policy "Admins can read waitlist submissions"
+on public.waitlist_submissions
+for select
+to authenticated
+using (exists (
+  select 1 from public.user_profiles
+  where id = auth.uid() and is_admin = true
+));
+
+drop policy if exists "Admins can read beta feedback" on public.beta_feedback;
+create policy "Admins can read beta feedback"
+on public.beta_feedback
+for select
+to authenticated
+using (exists (
+  select 1 from public.user_profiles
+  where id = auth.uid() and is_admin = true
+));
+
+drop policy if exists "Admins can read readiness results" on public.readiness_results;
+create policy "Admins can read readiness results"
+on public.readiness_results
+for select
+to authenticated
+using (exists (
+  select 1 from public.user_profiles
+  where id = auth.uid() and is_admin = true
+));
 
 drop policy if exists "Users can read their own profile" on public.user_profiles;
 create policy "Users can read their own profile"
