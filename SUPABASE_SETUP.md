@@ -35,6 +35,8 @@ If `beta_feedback` already exists, the schema also adds founder review columns:
 
 - `status`
 - `priority`
+- `product_area`
+- `internal_note`
 
 ## 3. Turn on the private beta operations view
 
@@ -48,7 +50,7 @@ where email = 'your-email@example.com';
 
 Replace `your-email@example.com` with the email you use to sign in to HerBid. Keep this limited to trusted admin accounts because it allows reading beta tester submissions.
 
-The Beta ops view can also mark feedback as reviewed, move items into progress, set high priority, and export tester notes to CSV.
+The Beta ops view can also mark feedback as reviewed or fixed, move items into progress, set priority, assign product areas, save private founder notes, and export tester notes to CSV.
 
 ## 4. Add the public project credentials
 

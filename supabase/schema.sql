@@ -18,6 +18,8 @@ create table if not exists public.beta_feedback (
   notes text not null,
   status text not null default 'New',
   priority text not null default 'Medium',
+  product_area text not null default 'Needs triage',
+  internal_note text not null default '',
   page_path text,
   created_at timestamptz not null default now()
 );
@@ -27,6 +29,12 @@ add column if not exists status text not null default 'New';
 
 alter table public.beta_feedback
 add column if not exists priority text not null default 'Medium';
+
+alter table public.beta_feedback
+add column if not exists product_area text not null default 'Needs triage';
+
+alter table public.beta_feedback
+add column if not exists internal_note text not null default '';
 
 create table if not exists public.readiness_results (
   id uuid primary key default gen_random_uuid(),
